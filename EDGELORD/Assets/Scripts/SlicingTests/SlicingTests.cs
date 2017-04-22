@@ -71,6 +71,7 @@ public class SlicingTests : MonoBehaviour {
             //variables to pass into this function
             SpriteSlicer2DSliceInfo info = GetMostRecentSlicedObject(slicedObjectInfo);
             GameObject slicedObject = GetSlicedObjectClosestToBase(info, m_swordBase);
+
             if(slicedObject != null)
             {
                 Debug.Log(slicedObject.name);
@@ -166,6 +167,7 @@ public class SlicingTests : MonoBehaviour {
         if (branch == null)
             return null;
 
+        //Note: there should be only 2 sliced parts in the list
         List<GameObject> slicedParts = branch.ChildObjects;
 
         //gets the worldspace coordinates for the centerpoint of the sliced sprite.
