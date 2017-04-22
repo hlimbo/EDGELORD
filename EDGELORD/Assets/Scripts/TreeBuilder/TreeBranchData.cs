@@ -11,6 +11,6 @@ namespace EDGELORD.TreeBuilder
         public float Width;
         public Vector2 GrowDirection;
         public TreeBranch ParentBranch;
-
+        public Vector3 LocalBasePoint;
     }
 }
