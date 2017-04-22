@@ -38,7 +38,6 @@ public class SlicingTests : MonoBehaviour {
     //SpriteSlicer2D.SliceSprite(startPoint, endPoint, spriteToSlice, canDestroyParent, ref slicedObjectInfo);
     void Update ()
     {
-
         //A crude function to slice objects 
         //if (Input.GetMouseButton(0))
         //{
@@ -57,7 +56,7 @@ public class SlicingTests : MonoBehaviour {
         //}
 
 
-        
+        startPoint = transform.position;
         if (Input.GetMouseButton(0))
         {
             endPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -97,6 +96,9 @@ public class SlicingTests : MonoBehaviour {
 
                     Vector3 offset = slicedPart.GetComponent<SlicedSprite>().SpriteBounds.size / 2;
 
+
+                    //probably shouldn't subract it from here. NOTE: localPosition is relative to the axis rotation of its parent.
+                    //might not work if the sword is facing horizontally 
                     if (i == 1)
                         childPivotPoint.transform.localPosition -= new Vector3(0, offset.y);
 
