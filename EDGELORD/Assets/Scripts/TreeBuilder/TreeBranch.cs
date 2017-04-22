@@ -54,7 +54,6 @@ namespace EDGELORD.TreeBuilder
         public void Generate(TreeBranchData data, bool doCoroutine = true)
         {
             BranchData = data;
-            //ToDo: Actually Generate Self based on input data.
 
             this.transform.parent = data.ParentBranch.transform;
             this.transform.localPosition = data.LocalBasePoint;
@@ -103,6 +102,13 @@ namespace EDGELORD.TreeBuilder
                     closestGameObject = child;
                 }
             }
+            foreach (GameObject child in info.ChildObjects)
+            {
+                if (child != closestGameObject)
+                {
+                    child.GetComponent<Rigidbody2D>().isKinematic = false;
+                }
+            }
             //GameObject[] slicedPieces = 
             //float sliceDistanceFromRoot = 
             //Todo: Rechild children to each appropriate part.
@@ -110,7 +116,7 @@ namespace EDGELORD.TreeBuilder
             //Todo: Find sliced piece to remain attached, and replace the old one it with the new one.
 
             //ToDo: Add Rigidbody to unattached piece, and destroy it after a period of time. 
-        }
+            }
 
 
         private IEnumerator CoLerpGenerate(Transform targetTransform, Vector3 targetScale, float lerpTime = 0.1f)
@@ -118,15 +124,19 @@ namespace EDGELORD.TreeBuilder
             Vector3 currentScale = targetScale;
             currentScale.y = 0f;
             targetTransform.localScale = currentScale;
+            //Vector3 startLocalPos = targetTransform.localPosition;
+            //Vector3 targetLocalPos = targetTransform.localPosition += Vector3.up * targetScale.y;
             float timer = 0f;
             while (timer < lerpTime)
             {
                 timer += Time.deltaTime;
                 currentScale.y = Mathf.Lerp(0f, targetScale.y, timer / lerpTime);
                 targetTransform.localScale = currentScale;
+                //targetTransform.localPosition = Vector3.Lerp(startLocalPos, targetLocalPos, timer / lerpTime);
                 yield return null;
             }
             targetTransform.localScale = targetScale;
+            
         }
 
     }

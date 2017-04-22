@@ -69,7 +69,7 @@ namespace EDGELORD.TreeBuilder
 	        b.Width = 1f; // Apply "Golden ratio" with length?
 	        b.GrowDirection = aimVector.normalized;
 	        b.ParentBranch = currentTargetBranch;
-	        b.LocalBasePoint =b.ParentBranch.transform.InverseTransformPoint(startPos);
+	        b.LocalBasePoint = b.ParentBranch.transform.InverseTransformPoint(startPos);
 	        return b;
 	    }
 
@@ -92,10 +92,11 @@ namespace EDGELORD.TreeBuilder
 	        {
 	            Debug.Log("Hit!" );
                 Debug.Log(rayCastResult.rigidbody);
-	            var b = rayCastResult.rigidbody.GetComponent<TreeBranch>();
+	            var b = rayCastResult.rigidbody.GetComponent<TreeBranch_Sprite>();
 	            if (b)
 	            {
-	                currentTargetBranch = b;
+	                currentTargetBranch = b.OwnerTreeBranch;
+	                Root.CurrentHoverBranch = b.OwnerTreeBranch;
 	            }
 	        }
 	        else
