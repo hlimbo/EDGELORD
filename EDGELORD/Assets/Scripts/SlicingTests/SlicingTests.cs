@@ -141,6 +141,7 @@ public class SlicingTests : MonoBehaviour {
 
     }
 
+
     public GameObject GetSlicedObjectClosestToBase(List<SpriteSlicer2DSliceInfo> slicedObjectInfo, GameObject baseObject)
     {
         if (slicedObjectInfo == null)
