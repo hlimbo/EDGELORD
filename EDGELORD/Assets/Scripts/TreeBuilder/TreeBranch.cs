@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
+using NUnit.Framework.Internal.Execution;
 using Players;
 using UnityEngine;
 
@@ -17,10 +18,31 @@ namespace EDGELORD.TreeBuilder
     {
         public PlayerID OwningPlayer;
         public List<TreeBranch> DirectChildBranches = new List<TreeBranch>();
+        [Space]
+        public GameObject SpriteObject; // The visual 
+        public TreeBranchData BranchData;
+
+        private void Awake()
+        {
+            Generate();
+        }
+
+        private void Generate()
+        {
+            
+        }
 
         public void CreateChildBranch(TreeBranchData data)
         {
             //ToDo: Actual Functionality of creating the new branch.
+        }
+
+        public void SliceBranch(Vector3 worldStartPoint, Vector3 worldEndPoint, GameObject cutGameObject)
+        {
+            List<SpriteSlicer2DSliceInfo> sliceInfoList = null;
+            SpriteSlicer2D.SliceSprite(worldStartPoint, worldEndPoint, cutGameObject, false, ref sliceInfoList);
+
+
         }
 
         public void HandleSliceReparenting(GameObject[] slicedPieces, float sliceDistanceFromRoot)

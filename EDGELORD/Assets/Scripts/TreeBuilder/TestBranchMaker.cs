@@ -21,7 +21,10 @@ namespace EDGELORD
 
 	    private void GenerateBranch(TreeBranchData data)
 	    {
-	        var go = GameObject.Instantiate(BranchPrefab, data.LocalBasePoint, Quaternion.identity, this.transform);
+            var go = GameObject.Instantiate(BranchPrefab, data.LocalBasePoint, Quaternion.identity, this.transform);
+	        go.transform.localPosition = data.LocalBasePoint;
+	        var rot = Quaternion.LookRotation(Vector3.forward, (Vector3) data.GrowDirection.normalized);
+	        go.transform.rotation = rot;
 
 	    }
 	}
