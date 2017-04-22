@@ -68,70 +68,107 @@ public class SlicingTests : MonoBehaviour {
             
             SpriteSlicer2D.SliceAllSprites(startPoint, endPoint, canDestroyParent, ref slicedObjectInfo, slicableMask);
 
-            if (slicedObjectInfo != null)
+            //variables to pass into this function
+            GameObject slicedObject = GetSlicedObjectClosestToBase(slicedObjectInfo, m_swordBase);
+            if(slicedObject != null)
             {
-                //retrieve the 2nd child and apply gravity to it.
-                Debug.Log("List Count: " + slicedObjectInfo.Count);
+                Debug.Log(slicedObject.name);
+            }
 
-                slicedObjectInfo[0].ChildObjects[1].GetComponent<Rigidbody2D>().gravityScale = 5;
-                slicedObjectInfo[0].ChildObjects[0].GetComponent<Rigidbody2D>().isKinematic = true;
+            //if (slicedObjectInfo != null)
+            //{
+            //    //retrieve the 2nd child and apply gravity to it.
+            //    Debug.Log("List Count: " + slicedObjectInfo.Count);
 
-                //Case 1: sliced object is the branch of the sword.
-                SpriteSlicer2DSliceInfo branch = slicedObjectInfo[0];
-                List<GameObject> slicedParts = branch.ChildObjects;//should only return 2 sliced objects for now (lets not worry about explosions).
+            //    slicedObjectInfo[0].ChildObjects[1].GetComponent<Rigidbody2D>().gravityScale = 5;
+            //    slicedObjectInfo[0].ChildObjects[0].GetComponent<Rigidbody2D>().isKinematic = true;
 
-                //Make 2 childPivotPoints for each slicedpart.
-                //Note: currently the slicedObjects transform position = the parent's transform position of the original piece.
-                GameObject swordBase = m_swordBase;
-                int i = 0;
-                foreach (GameObject slicedPart in slicedParts)
-                {
-                    GameObject childPivotPoint = Instantiate<GameObject>(childPivotPointPrefab);
-                    childPivotPoint.transform.parent = slicedPart.transform.transform;
-                    //set childPivotPointPosition relative to slicedPart's transform.position
-                    childPivotPoint.transform.localPosition = Vector3.zero;
+            //    //Case 1: sliced object is the branch of the sword.
+            //    SpriteSlicer2DSliceInfo branch = slicedObjectInfo[0];
+            //    List<GameObject> slicedParts = branch.ChildObjects;//should only return 2 sliced objects for now (lets not worry about explosions).
 
-                    //set the childPivotPointPosition relative to the topside of the slicedObject.
-                    //Debug.Log(slicedPart.GetComponent<SlicedSprite>().SpriteBounds.size);
+            //    //Make 2 childPivotPoints for each slicedpart.
+            //    //Note: currently the slicedObjects transform position = the parent's transform position of the original piece.
+            //    GameObject swordBase = m_swordBase;
+            //    for(int i = 0;i < slicedParts.Count; ++i)
+            //    {
+            //        GameObject slicedPart = slicedParts[i];
+            //        GameObject childPivotPoint = Instantiate<GameObject>(childPivotPointPrefab);
+            //        childPivotPoint.transform.parent = slicedPart.transform;
+            //        //set childPivotPointPosition to the worldspace coordinate for the centerpoint of the sliced sprite.
+            //        childPivotPoint.transform.position = slicedPart.GetComponent<SlicedSprite>().MeshRenderer.bounds.center;
 
-                    Vector3 offset = slicedPart.GetComponent<SlicedSprite>().SpriteBounds.size / 2;
+            //        //USE THIS INSTEAD as it gets the worldspace coordinates for the centerpoint of the sliced sprite.
+            //        //slicedPart.GetComponent<SlicedSprite>().MeshRenderer.bounds.center;
+            //        // Debug.Log("!sliced part center point" + i + " : " + slicedPart.GetComponent<SlicedSprite>().MeshRenderer.bounds.center);
 
-
-                    //probably shouldn't subract it from here. NOTE: localPosition is relative to the axis rotation of its parent.
-                    //might not work if the sword is facing horizontally 
-                    if (i == 1)
-                        childPivotPoint.transform.localPosition -= new Vector3(0, offset.y);
-
-                    Debug.Log(childPivotPoint.transform.localPosition);
-                    i++;
-                }
+            //        //this returns the centerpoint relative to its local position.
+            //        //slicedPart.GetComponent<SlicedSprite>().SpriteBounds.center;
+            //        //Debug.Log("sliced part center point" + i + " : "  + slicedPart.GetComponent<SlicedSprite>().SpriteBounds.center);
+            //        //Debug.Log(childPivotPoint.transform.localPosition);
+            //    }
 
 
-                //find the closest branch to base object. ~ all child objects are relative to the parent's location.
-                Vector3 basePosition = swordBase.transform.position;
-                GameObject closestObjectToBase = slicedParts[0];
-                float minDistanceFromBase = (slicedParts[0].transform.GetChild(0).transform.position - basePosition).magnitude;
-                float distanceFromBase = (slicedParts[1].transform.GetChild(0).transform.position - basePosition).magnitude;
+            //    //find the closest branch to base object. ~ all child objects are relative to the parent's location.
+            //    Vector3 basePosition = swordBase.transform.position;
+            //    GameObject closestObjectToBase;
+          
+            //    float d1 = Vector3.Distance(slicedParts[0].transform.GetChild(0).transform.position, basePosition);
+            //    float d2 = Vector3.Distance(slicedParts[1].transform.GetChild(0).transform.position, basePosition);
 
-                Debug.Log(closestObjectToBase.name + " " + minDistanceFromBase);
-                Debug.Log(slicedParts[1].name + " " + distanceFromBase);
+            //    Debug.Log(slicedParts[0].name + " " + d1);
+            //    Debug.Log(slicedParts[1].name + " " + d2);
 
-                if (distanceFromBase < minDistanceFromBase)
-                {
-                    closestObjectToBase = slicedParts[1]; 
-                }
+            //    if (d1 > d2)
+            //    {
+            //        closestObjectToBase = slicedParts[1]; 
+            //    }
+            //    else//d1 <= d2
+            //    {
+            //        closestObjectToBase = slicedParts[0];
+            //    }
 
-                Debug.Log("Closest Object from base: " + closestObjectToBase.name);
+             //   Debug.Log("Closest Object from base: " + closestObjectToBase.name);
 
 
                 //Case 2: sliced object is the base of the sword.
-            }
-            else
-            {
-                Debug.Log(" slicedObjectInfo is null");
-            }
+           // }
+           // else
+          //  {
+           //     Debug.Log(" slicedObjectInfo is null");
+          //  }
         }
 
+    }
+
+    public GameObject GetSlicedObjectClosestToBase(List<SpriteSlicer2DSliceInfo> slicedObjectInfo, GameObject baseObject)
+    {
+        if (slicedObjectInfo == null)
+            return null;
+        //shouldn't have more than one slicedObjectInfo in list unless explosion function was called.
+        if(slicedObjectInfo.Count > 1)
+        {
+            Debug.Log("GetSlicedObjectClosestToBase::slicedObjectInfo count " + slicedObjectInfo.Count);
+            foreach(SpriteSlicer2DSliceInfo info in slicedObjectInfo)
+            {
+                Debug.Log(info.SlicedObject.name);
+            }
+            return null;
+        }
+
+        SpriteSlicer2DSliceInfo branch = slicedObjectInfo[0];
+        List<GameObject> slicedParts = branch.ChildObjects;
+
+        //gets the worldspace coordinates for the centerpoint of the sliced sprite.
+        Vector3 slicedPartCenter1 = slicedParts[0].GetComponent<SlicedSprite>().MeshRenderer.bounds.center;
+        Vector3 slicedPartCenter2 = slicedParts[1].GetComponent<SlicedSprite>().MeshRenderer.bounds.center;
+
+        float d1 = Vector3.Distance(baseObject.transform.position, slicedPartCenter1);
+        float d2 = Vector3.Distance(baseObject.transform.position, slicedPartCenter2);
+
+        GameObject closestObjectToBase = d1 < d2 ? slicedParts[0] : slicedParts[1];
+
+        return closestObjectToBase;
     }
 
 }
