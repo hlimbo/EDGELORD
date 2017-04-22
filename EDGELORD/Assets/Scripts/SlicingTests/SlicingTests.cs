@@ -69,7 +69,8 @@ public class SlicingTests : MonoBehaviour {
             SpriteSlicer2D.SliceAllSprites(startPoint, endPoint, canDestroyParent, ref slicedObjectInfo, slicableMask);
 
             //variables to pass into this function
-            GameObject slicedObject = GetSlicedObjectClosestToBase(slicedObjectInfo, m_swordBase);
+            SpriteSlicer2DSliceInfo info = GetMostRecentSlicedObject(slicedObjectInfo);
+            GameObject slicedObject = GetSlicedObjectClosestToBase(info, m_swordBase);
             if(slicedObject != null)
             {
                 Debug.Log(slicedObject.name);
@@ -142,22 +143,29 @@ public class SlicingTests : MonoBehaviour {
     }
 
 
-    public GameObject GetSlicedObjectClosestToBase(List<SpriteSlicer2DSliceInfo> slicedObjectInfo, GameObject baseObject)
+    //TODO: Create a helper function that obtains the most recently sliced game object.
+    public SpriteSlicer2DSliceInfo GetMostRecentSlicedObject(List<SpriteSlicer2DSliceInfo> slicedObjectInfo)
     {
-        if (slicedObjectInfo == null)
-            return null;
-        //shouldn't have more than one slicedObjectInfo in list unless explosion function was called.
-        if(slicedObjectInfo.Count > 1)
+        if(slicedObjectInfo == null)
         {
-            Debug.Log("GetSlicedObjectClosestToBase::slicedObjectInfo count " + slicedObjectInfo.Count);
-            foreach(SpriteSlicer2DSliceInfo info in slicedObjectInfo)
-            {
-                Debug.Log(info.SlicedObject.name);
-            }
+            Debug.Log("GetMostRecentSlicedObject slicedObjectInfo is null");
             return null;
         }
 
-        SpriteSlicer2DSliceInfo branch = slicedObjectInfo[0];
+        if(slicedObjectInfo.Count == 1)
+        {
+            return slicedObjectInfo[0];
+        }
+
+        //GET THE last object in the array is the most recently sliced.
+        int recentlySlicedIndex = slicedObjectInfo.Count - 1;
+        return slicedObjectInfo[recentlySlicedIndex];
+    }
+    public GameObject GetSlicedObjectClosestToBase(SpriteSlicer2DSliceInfo branch, GameObject baseObject)
+    {
+        if (branch == null)
+            return null;
+
         List<GameObject> slicedParts = branch.ChildObjects;
 
         //gets the worldspace coordinates for the centerpoint of the sliced sprite.
