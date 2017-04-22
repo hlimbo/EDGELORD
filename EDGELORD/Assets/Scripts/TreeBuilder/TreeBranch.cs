@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Xml.Serialization;
-using NUnit.Framework.Internal.Execution;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Players;
 using UnityEngine;
 
@@ -23,6 +22,9 @@ namespace EDGELORD.TreeBuilder
         public TreeBranchData BranchData;
 
         public TreeRoot MyRoot;
+        [Header("Default Propoportions")]
+        public float defaultLength = 3.2f;
+        public float defaultWidth = 0.5f;
 
         private void Start()
         {
@@ -38,14 +40,33 @@ namespace EDGELORD.TreeBuilder
             }
         }
         // Call this when the Branch is created.
-        public void Generate(TreeBranchData data)
+        public void Generate(TreeBranchData data, bool doCoroutine = true)
         {
             BranchData = data;
             //ToDo: Actually Generate Self based on input data.
+
             this.transform.parent = data.ParentBranch.transform;
             this.transform.localPosition = data.LocalBasePoint;
             var rot = Quaternion.LookRotation(Vector3.forward, (Vector3)data.GrowDirection.normalized);
             this.transform.rotation = rot;
+            var targetScale = GetNewProportions(data.Length, data.Width);
+            if (doCoroutine)
+            {
+                StartCoroutine(CoLerpGenerate(this.SpriteObject.transform, targetScale));
+            }
+            else
+            {
+                this.SpriteObject.transform.localScale = targetScale;
+            }
+        }
+
+        private Vector3 GetNewProportions(float targetLength, float targetWidth)
+        {
+            float newLength = targetLength / defaultLength;
+            float newWidth = targetWidth / defaultWidth;
+
+            Vector3 newScale = new Vector3(newWidth,  newLength, 1f);
+            return newScale;
         }
 
         public void SliceBranch(Vector3 worldStartPoint, Vector3 worldEndPoint, GameObject cutGameObject)
@@ -67,5 +88,23 @@ namespace EDGELORD.TreeBuilder
 
             //ToDo: Add Rigidbody to unattached piece, and destroy it after a period of time. 
         }
+
+
+        private IEnumerator CoLerpGenerate(Transform targetTransform, Vector3 targetScale, float lerpTime = 0.1f)
+        {
+            Vector3 currentScale = targetScale;
+            currentScale.y = 0f;
+            targetTransform.localScale = currentScale;
+            float timer = 0f;
+            while (timer < lerpTime)
+            {
+                timer += Time.deltaTime;
+                currentScale.y = Mathf.Lerp(0f, targetScale.y, timer / lerpTime);
+                targetTransform.localScale = currentScale;
+                yield return null;
+            }
+            targetTransform.localScale = targetScale;
+        }
+
     }
 }
