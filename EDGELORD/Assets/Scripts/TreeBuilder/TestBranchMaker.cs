@@ -7,7 +7,8 @@ namespace EDGELORD
 {
 	public class TestBranchMaker : MonoBehaviour
 	{
-	    public GameObject BranchPrefab;
+        public GameObject BranchPrefab;
+	    public TreeRoot TreeRoot;
 	    public TreeBranchData BranchData;
 	    public KeyCode TestInput = KeyCode.Space;
 
@@ -19,10 +20,9 @@ namespace EDGELORD
 	        }
 	    }
 
-	    private void GenerateBranch(TreeBranchData data)
+	    public void GenerateBranch(TreeBranchData data)
 	    {
-	        var go = GameObject.Instantiate(BranchPrefab, data.LocalBasePoint, Quaternion.identity, this.transform);
-
+            TreeRoot.CreateBranch(data);
 	    }
 	}
 }
