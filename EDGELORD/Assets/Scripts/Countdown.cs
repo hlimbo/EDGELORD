@@ -8,7 +8,10 @@ public class Countdown : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        countdownText = GetComponent<TMP_Text>();
+        countdownText = GetComponent<TextMeshPro>();
+        if (countdownText == null) {
+            Debug.Log("could not GetComponent<TMP_Text>");
+        }
         countdownText.text = "3";
 	}
 
