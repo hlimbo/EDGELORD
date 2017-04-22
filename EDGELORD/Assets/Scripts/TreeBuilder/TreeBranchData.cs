@@ -9,7 +9,9 @@ namespace EDGELORD.TreeBuilder
     {
         public float Length;
         public float Width;
-        public Transform Parent;
+        public Vector2 GrowDirection;
+        public TreeBranch 
+        public Vector3 WorldPosition;
 
     }
 }
