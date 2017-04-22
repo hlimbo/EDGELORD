@@ -13,7 +13,7 @@ MusicPlayer options:
 	when unchecked, MusicPlayer does not StartMusic until the StartMusic() function is explicitly called.
 */
 
-public class MusicPlayer : MonoBehaviour {
+public class MusicPlayer : Singleton<MusicPlayer> {
 
 	public float Volume = 1.0F;
 	public double StartMusicDelay = 0.0F;
@@ -25,6 +25,8 @@ public class MusicPlayer : MonoBehaviour {
 	private double nextEventTime;
 	private int flip = 0;
 	private bool isPlaying = false;
+
+    protected MusicPlayer() {}
 
 	// Use this for initialization
 	void Start () {
