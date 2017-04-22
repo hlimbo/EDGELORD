@@ -12,7 +12,7 @@ public class SlicingTests : MonoBehaviour {
     Vector3 endPoint;
 
     [SerializeField]
-    List<SpriteSlicer2DSliceInfo> slicedObjectInfo = null;
+    List<SpriteSlicer2DSliceInfo> slicedObjectInfo = new List<SpriteSlicer2DSliceInfo>();
 
     public GameObject spriteToSlice;
 
@@ -53,7 +53,7 @@ public class SlicingTests : MonoBehaviour {
         //}
 
 
-        //THIS ONE PLS
+        
         if (Input.GetMouseButton(0))
         {
             endPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -62,7 +62,20 @@ public class SlicingTests : MonoBehaviour {
 
         if(Input.GetMouseButtonUp(0))
         {
+            
             SpriteSlicer2D.SliceAllSprites(startPoint, endPoint, canDestroyParent, ref slicedObjectInfo, slicableMask);
+
+            if (slicedObjectInfo != null)
+            {
+                //retrieve the 2nd child and apply gravity to it.
+                Debug.Log("List Count: " + slicedObjectInfo.Count);
+                slicedObjectInfo[0].ChildObjects[1].GetComponent<Rigidbody2D>().gravityScale = 5;
+                slicedObjectInfo[0].ChildObjects[0].GetComponent<Rigidbody2D>().isKinematic = true;
+            }
+            else
+            {
+                Debug.Log(" slicedObjectInfo is null");
+            }
         }
 
     }
