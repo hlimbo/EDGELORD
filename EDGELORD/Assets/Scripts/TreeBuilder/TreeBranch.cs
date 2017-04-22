@@ -28,7 +28,17 @@ namespace EDGELORD.TreeBuilder
 
         private void Start()
         {
+            GetTreeRoot();
+        }
+
+        private void GetTreeRoot()
+        {
             var roots = FindObjectsOfType<TreeRoot>();
+            if (roots.Length < 1)
+            {
+                Debug.LogWarning("[TreeBranch] No Roots found!");
+                return;
+            }
             foreach (TreeRoot root in roots)
             {
                 if (root.OwningPlayer == OwningPlayer) MyRoot = root;
@@ -39,6 +49,7 @@ namespace EDGELORD.TreeBuilder
                 MyRoot = roots[0];
             }
         }
+
         // Call this when the Branch is created.
         public void Generate(TreeBranchData data, bool doCoroutine = true)
         {
@@ -78,8 +89,20 @@ namespace EDGELORD.TreeBuilder
 
         }
 
-        public void HandleSliceReparenting(SpriteSlicer2DSliceInfo[] sliceInfo)
+        private void HandleSliceReparenting(SpriteSlicer2DSliceInfo[] sliceInfo)
         {
+            SpriteSlicer2DSliceInfo info = sliceInfo[0];
+            GameObject closestGameObject = info.ChildObjects[0];
+            float closestDist = Vector3.Distance(info.SlicedObject.transform.position, info.ChildObjects[0].GetComponent<SlicedSprite>().SpriteBounds.center);
+            foreach (GameObject child in info.ChildObjects)
+            {
+                var newDist = Vector3.Distance(info.SlicedObject.transform.position, child.GetComponent<SlicedSprite>().SpriteBounds.center);
+                if (newDist > closestDist)
+                {
+                    closestDist = newDist;
+                    closestGameObject = child;
+                }
+            }
             //GameObject[] slicedPieces = 
             //float sliceDistanceFromRoot = 
             //Todo: Rechild children to each appropriate part.
