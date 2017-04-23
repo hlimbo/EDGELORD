@@ -9,6 +9,8 @@ public class CharacterActionScript : MonoBehaviour {
     [Space]
     public float maxLength;
     public float minLength;
+    public float rotationSpeed;
+    public float lengthChangeSpeed;
 
     private bool smithing;
 
@@ -58,9 +60,9 @@ public class CharacterActionScript : MonoBehaviour {
         float direction = 0;
         float length = minLength;
         while (!inputs.getActionDown() && branch.IsAttached && branch.GetProjectedPosition(transform.position).magnitude<=branch.BranchLength) {
-            direction += inputs.getMovementDirection().x*0.5f;
+            direction += inputs.getMovementDirection().x*rotationSpeed;
             float radDirection = (direction * Mathf.Deg2Rad) + (Mathf.PI / 2);
-            length = Mathf.Clamp(length+inputs.getMovementDirection().y*0.1f, minLength, maxLength);
+            length = Mathf.Clamp(length+inputs.getMovementDirection().y*lengthChangeSpeed, minLength, maxLength);
             bladeScript.setRotation(branch.transform.TransformDirection(new Vector2(-Mathf.Cos(radDirection), Mathf.Sin(radDirection))));
             bladeScript.setScale(new Vector2(2.0f/length, length));
             yield return null;
