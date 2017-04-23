@@ -25,7 +25,7 @@ public class PlayerInputManager : MonoBehaviour {
         if (Input.GetKey(left)) {
             horizontal -= 1;
         }
-        return new Vector2(horizontal, vertical).normalized;
+        return new Vector2(horizontal, vertical);
     }
 
     public bool getActionDown() {
