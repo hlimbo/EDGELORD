@@ -100,6 +100,7 @@ namespace EDGELORD.TreeBuilder
             else
             {
                 this.SpriteHolder.transform.localScale = targetScale;
+                MyRoot.OnCompleteBranchCallback();
             }
 
         }
@@ -241,7 +242,7 @@ namespace EDGELORD.TreeBuilder
                 yield return null;
             }
             targetTransform.localScale = targetScale;
-            
+            MyRoot.OnCompleteBranchCallback();
         }
 
 
@@ -291,5 +292,13 @@ namespace EDGELORD.TreeBuilder
             return (isWorld)? this.transform.TransformPoint(projVector) : projVector;
         }
 
+        public void SetTint(Color tint)
+        {
+            branchSprite.SetTint(tint);
+        }
+        public void SetTint(Color tint, int order)
+        {
+            branchSprite.SetTint(tint, order);
+        }
     }
 }

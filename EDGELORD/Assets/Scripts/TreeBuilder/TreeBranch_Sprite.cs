@@ -88,5 +88,32 @@ namespace EDGELORD.TreeBuilder
             return closestObjectToBase;
         }
 
+        public void SetTint(Color tint)
+        {
+            var r = GetComponent<Renderer>();
+            if (r)
+            {
+                r.material.color = tint;
+
+            }
+            else
+            {
+                Debug.Log("No Renderer!");
+            }
+        }
+        public void SetTint(Color tint, int order)
+        {
+            var r = GetComponent<Renderer>();
+            if (r)
+            {
+                r.material.color = tint;
+                r.sortingOrder = order;
+            }
+            else
+            {
+                Debug.Log("No Renderer!");
+            }
+        }
+
     }
 }

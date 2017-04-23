@@ -24,5 +24,9 @@ namespace EDGELORD
 	    {
             TreeRoot.CreateBranch(data);
 	    }
-	}
+        public void GenerateBranch(TreeBranchData data, TreeRoot root)
+        {
+            root.CreateBranch(data);
+        }
+    }
 }
