@@ -16,6 +16,7 @@ namespace EDGELORD.TreeBuilder
         
         public Action<Vector3> OnBranchCutAction = delegate { };
         public Action OnUpdateTreeCollider = delegate { };
+        public Action<float> OnUpdateArea = delegate { };
 
         public float TotalArea { get; private set; }
 
@@ -56,10 +57,7 @@ namespace EDGELORD.TreeBuilder
 
         public void UpdateTotalArea()
         {
-            foreach (TreeBranch branch in BranchList)
-            {
-                
-            }
+            OnUpdateArea(TotalArea);
         }
     }
 }
