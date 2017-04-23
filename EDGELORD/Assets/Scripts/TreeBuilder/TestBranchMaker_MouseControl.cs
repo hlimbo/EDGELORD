@@ -96,6 +96,7 @@ namespace EDGELORD.TreeBuilder
 	            if (b)
 	            {
 	                currentTargetBranch = b.OwnerTreeBranch;
+	                startPos = b.OwnerTreeBranch.GetProjectedPosition(startPos, true);
 	                //Root.CurrentHoverBranch = b.OwnerTreeBranch;
 	            }
 	        }
