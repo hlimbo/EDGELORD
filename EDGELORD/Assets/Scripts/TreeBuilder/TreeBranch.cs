@@ -147,13 +147,10 @@ namespace EDGELORD.TreeBuilder
 
         public void HandleSliceReparenting(List<SpriteSlicer2DSliceInfo> sliceInfo)
         {
-            branchSprite.HandleSlice(sliceInfo);
+            //branchSprite.HandleSlice(sliceInfo);
 
             SpriteSlicer2DSliceInfo info = GetMostRecentSlicedObject(sliceInfo);
-            if (info == null)
-            {
-                
-            }
+
             List<GameObject> childObjects = new List<GameObject>();
             foreach (Transform child in SpriteHolder.transform)
             {
@@ -168,8 +165,8 @@ namespace EDGELORD.TreeBuilder
                         sp = child.gameObject.AddComponent<TreeBranch_Sprite>();
                         sp.OwnerTreeBranch = this;
                     }
-                    var spriteCenterPos = sp.GetComponent<Renderer>().bounds.center;
-                    var projectedDist = Vector3.Project(this.transform.InverseTransformPoint(spriteCenterPos), Vector3.up);
+                    //var spriteCenterPos = sp.GetComponent<Renderer>().bounds.center;
+                    //var projectedDist = Vector3.Project(this.transform.InverseTransformPoint(spriteCenterPos), Vector3.up);
                 }
             }
             Debug.Log(childObjects.Count);
@@ -213,6 +210,7 @@ namespace EDGELORD.TreeBuilder
                     child.gameObject.layer = 9; // "NoCollision" Layer.
                 }
             }
+            if (info.SlicedObject) info.SlicedObject.transform.parent = null;
             closestGameObject.GetComponent<Rigidbody2D>().isKinematic = true;
             branchSprite = closestGameObject.GetComponent<TreeBranch_Sprite>();
         }
