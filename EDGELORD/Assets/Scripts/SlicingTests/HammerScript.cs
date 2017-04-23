@@ -11,12 +11,18 @@ public class HammerScript : MonoBehaviour
     private SfxPlayer sfxPlayer;
     private PlayerInputManager inputs;
 
-    public Animation animation;
+    //public GameObject particleFXPrefab;
+    public GameObject particleFXGO;
+    private ParticleSystem[] particles;
+
+    //hacky
+    private bool gameStart = true;
 
     void  Start()
     {
         animator = GetComponent<Animator>();
         sfxPlayer = FindObjectOfType<SfxPlayer>();
+        particles = particleFXGO.GetComponentsInChildren<ParticleSystem>();
 
         // get reference to the player's PlayerInputManager to read inputs
         string playerToFind = null;
@@ -34,6 +40,8 @@ public class HammerScript : MonoBehaviour
             inputs = (PlayerInputManager)GameObject.Find(playerToFind).GetComponent<PlayerInputManager>();
         }
 
+        if (inputs == null)
+            Debug.Log("hello");
         animator.StopPlayback();
     }
 
@@ -47,10 +55,23 @@ public class HammerScript : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.name.Equals("Anvil"))
+        if(gameStart && other.name.Equals("Anvil"))
         {
-            Debug.Log("anvil");
+            gameStart = false;
+        }
+        else if(other.name.Equals("Anvil"))
+        {
             animator.SetBool("canSwingHammer", false);
+            int r = Random.Range(0, sfxPlayer.soundEffects.Length);
+            if (r == 0)
+                sfxPlayer.PlaySoundEffect("anvil_hit_1");
+            else
+                sfxPlayer.PlaySoundEffect("anvil_hit_2");
+
+            foreach (ParticleSystem particle in particles)
+            {
+                particle.Play();
+            }
         }
     }
 
