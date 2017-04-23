@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+public class ArtSwing : MonoBehaviour {
 
-public class QuitButton : MonoBehaviour {
     private Button button;
     private RectTransform rect;
     private bool isSwinging;
@@ -14,21 +14,20 @@ public class QuitButton : MonoBehaviour {
         PHASE2,
         PHASE3
     }
-    private Phases swingState = QuitButton.Phases.PHASE1;
+    private Phases swingState = ArtSwing.Phases.PHASE1;
 
-    void Awake () {
-        button = GetComponent<Button>();
+    void Awake()
+    {
         rect = GetComponent<RectTransform>();
-        button.onClick.AddListener(QuitProgram);
     }
 
     void FixedUpdate()
     {
-        int currentX = (int) rect.eulerAngles.x;
+        int currentX = (int)rect.eulerAngles.x;
         if (isSwinging)
         {
             updateTime--;
-            if (swingState == QuitButton.Phases.PHASE1)
+            if (swingState == ArtSwing.Phases.PHASE1)
             {
                 if (updateTime == 0)
                 {
@@ -38,12 +37,12 @@ public class QuitButton : MonoBehaviour {
                 }
                 if (currentX >= 30f)
                 {
-                    swingState = QuitButton.Phases.PHASE2;
+                    swingState = ArtSwing.Phases.PHASE2;
                 }
             }
-            
-            else if (swingState == QuitButton.Phases.PHASE2)
-             {
+
+            else if (swingState == ArtSwing.Phases.PHASE2)
+            {
                 if (updateTime == 0)
                 {
                     currentX -= 3;
@@ -52,11 +51,11 @@ public class QuitButton : MonoBehaviour {
                 }
                 if (currentX <= 345f)
                 {
-                    swingState = QuitButton.Phases.PHASE3;
+                    swingState = ArtSwing.Phases.PHASE3;
                 }
-             }
-             else if (swingState == QuitButton.Phases.PHASE3)
-             {
+            }
+            else if (swingState == ArtSwing.Phases.PHASE3)
+            {
                 if (updateTime == 0)
                 {
                     currentX += 3;
@@ -65,24 +64,13 @@ public class QuitButton : MonoBehaviour {
                 }
                 if (currentX >= 357)
                 {
-                    swingState = QuitButton.Phases.PHASE1;
+                    swingState = ArtSwing.Phases.PHASE1;
                     rect.eulerAngles = new Vector3(0, 0, 0);
                     isSwinging = false;
                 }
-             }
-             
+            }
+
         }
-    }
-
-    void QuitProgram () {
-        StartCoroutine(StopMusicThenQuit());
-    }
-
-    private IEnumerator StopMusicThenQuit () {
-        MusicPlayer musicPlayer = (MusicPlayer)FindObjectOfType(typeof(MusicPlayer));
-        musicPlayer.FadeOutAndStop(0.9f);
-        yield return new WaitForSeconds(1.0f);
-        Application.Quit();
     }
 
     public void Swing()
@@ -94,3 +82,5 @@ public class QuitButton : MonoBehaviour {
         }
     }
 }
+
+
