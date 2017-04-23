@@ -92,10 +92,10 @@ public class SpriteSlicer2DDemoManager : MonoBehaviour
 			{
 				for(int loop = 0; loop < m_MousePositions.Count - 1; loop++)
 				{
-					SpriteSlicer2D.SliceAllSprites(m_MousePositions[loop].m_WorldPosition, m_MousePositions[m_MousePositions.Count - 1].m_WorldPosition, true, ref m_SlicedSpriteInfo);
-
+					SpriteSlicer2D.SliceAllSprites(m_MousePositions[loop].m_WorldPosition, m_MousePositions[m_MousePositions.Count - 1].m_WorldPosition, false, ref m_SlicedSpriteInfo);
 					if(m_SlicedSpriteInfo.Count > 0)
 					{
+                        //if(m_SlicedSpriteInfo[0] != null) m_SlicedSpriteInfo[0].SlicedObject.transform.parent.SendMessage("OnBecomeSliced", SendMessageOptions.DontRequireReceiver);
 						// Add some force in the direction of the swipe so that stuff topples over rather than just being
 						// sliced but remaining stationary
 						for(int spriteIndex = 0; spriteIndex < m_SlicedSpriteInfo.Count; spriteIndex++)

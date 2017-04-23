@@ -28,7 +28,17 @@ namespace EDGELORD.TreeBuilder
 
         private void Start()
         {
+            GetTreeRoot();
+        }
+
+        private void GetTreeRoot()
+        {
             var roots = FindObjectsOfType<TreeRoot>();
+            if (roots.Length < 1)
+            {
+                Debug.LogWarning("[TreeBranch] No Roots found!");
+                return;
+            }
             foreach (TreeRoot root in roots)
             {
                 if (root.OwningPlayer == OwningPlayer) MyRoot = root;
@@ -39,11 +49,11 @@ namespace EDGELORD.TreeBuilder
                 MyRoot = roots[0];
             }
         }
+
         // Call this when the Branch is created.
         public void Generate(TreeBranchData data, bool doCoroutine = true)
         {
             BranchData = data;
-            //ToDo: Actually Generate Self based on input data.
 
             this.transform.parent = data.ParentBranch.transform;
             this.transform.localPosition = data.LocalBasePoint;
@@ -78,8 +88,27 @@ namespace EDGELORD.TreeBuilder
 
         }
 
-        public void HandleSliceReparenting(SpriteSlicer2DSliceInfo[] sliceInfo)
+        private void HandleSliceReparenting(SpriteSlicer2DSliceInfo[] sliceInfo)
         {
+            SpriteSlicer2DSliceInfo info = sliceInfo[0];
+            GameObject closestGameObject = info.ChildObjects[0];
+            float closestDist = Vector3.Distance(info.SlicedObject.transform.position, info.ChildObjects[0].GetComponent<SlicedSprite>().SpriteBounds.center);
+            foreach (GameObject child in info.ChildObjects)
+            {
+                var newDist = Vector3.Distance(info.SlicedObject.transform.position, child.GetComponent<SlicedSprite>().SpriteBounds.center);
+                if (newDist > closestDist)
+                {
+                    closestDist = newDist;
+                    closestGameObject = child;
+                }
+            }
+            foreach (GameObject child in info.ChildObjects)
+            {
+                if (child != closestGameObject)
+                {
+                    child.GetComponent<Rigidbody2D>().isKinematic = false;
+                }
+            }
             //GameObject[] slicedPieces = 
             //float sliceDistanceFromRoot = 
             //Todo: Rechild children to each appropriate part.
@@ -87,7 +116,7 @@ namespace EDGELORD.TreeBuilder
             //Todo: Find sliced piece to remain attached, and replace the old one it with the new one.
 
             //ToDo: Add Rigidbody to unattached piece, and destroy it after a period of time. 
-        }
+            }
 
 
         private IEnumerator CoLerpGenerate(Transform targetTransform, Vector3 targetScale, float lerpTime = 0.1f)
@@ -95,15 +124,19 @@ namespace EDGELORD.TreeBuilder
             Vector3 currentScale = targetScale;
             currentScale.y = 0f;
             targetTransform.localScale = currentScale;
+            //Vector3 startLocalPos = targetTransform.localPosition;
+            //Vector3 targetLocalPos = targetTransform.localPosition += Vector3.up * targetScale.y;
             float timer = 0f;
             while (timer < lerpTime)
             {
                 timer += Time.deltaTime;
                 currentScale.y = Mathf.Lerp(0f, targetScale.y, timer / lerpTime);
                 targetTransform.localScale = currentScale;
+                //targetTransform.localPosition = Vector3.Lerp(startLocalPos, targetLocalPos, timer / lerpTime);
                 yield return null;
             }
             targetTransform.localScale = targetScale;
+            
         }
 
     }
