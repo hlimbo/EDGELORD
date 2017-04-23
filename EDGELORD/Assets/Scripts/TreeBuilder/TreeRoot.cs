@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Players;
 using UnityEngine;
 
@@ -11,6 +12,8 @@ namespace EDGELORD.TreeBuilder
         public GameObject BranchPrefab;
         public TreeBranch StartBranch;
         public TreeBranch CurrentHoverBranch;
+
+        public Action OnBranchCutAction = delegate { };
 
         public void Awake()
         {
