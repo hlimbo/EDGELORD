@@ -5,59 +5,124 @@ using TMPro;
 
 namespace EDGELORD.Manager {
     public class GameManager : Singleton<GameManager> {
-        private MusicPlayer musicPlayer;
-        private SfxPlayer sfxPlayer;
-        private Canvas ui;
 
         private ScoreDisplay player1ScoreDisplay;
         private ScoreDisplay player2ScoreDisplay;
+        private TimerDisplay timerDisplay;
 
+        private bool gameInProgress;
+        private float timeLeft;
+
+        private IEnumerator timerCoroutine;
+        private IEnumerator TEST_scoreUpdateCoroutine;
+
+        private Vector3[] startingPlayerPositions;
+
+        public MusicPlayer musicPlayer;
+        //private SfxPlayer sfxPlayer;
+        public Canvas ui;
+        public GameObject[] players;
+
+        public int gameLengthInSeconds = 60;
         public bool DEBUG_Disable_Music = false;
-
-        /* game field and other objects go here */
 
         protected GameManager () {}
 
-        void Awake () {
-            musicPlayer = (MusicPlayer)FindObjectOfType(typeof(MusicPlayer));
-            sfxPlayer = (SfxPlayer)FindObjectOfType(typeof(SfxPlayer));
-            ui = (Canvas)FindObjectOfType(typeof(Canvas));
+        void Start () {
+            gameInProgress = false;
+            musicPlayer = (MusicPlayer)FindObjectOfType<MusicPlayer>();
+            //sfxPlayer = (SfxPlayer)FindObjectOfType(typeof(SfxPlayer));
+            ui = (Canvas)FindObjectOfType<Canvas>();
+            timerDisplay = ui.GetComponentInChildren<TimerDisplay>();
 
             Component[] playerScoreDisplays = ui.GetComponentsInChildren<ScoreDisplay>();
             player1ScoreDisplay = (ScoreDisplay)playerScoreDisplays[0];
             player2ScoreDisplay = (ScoreDisplay)playerScoreDisplays[1];
 
+            timerCoroutine = startTimer();
+            TEST_scoreUpdateCoroutine = TEST_updateScore();
+
+            startingPlayerPositions = new Vector3[] { players[0].transform.position, players[1].transform.position };
+
             InitObjects();
-            StartGame();
-        }
 
-        void InitObjects () {
-            // TODO: instantiate and setup playing field and player objects here
-        }
-
-        void StartGame () {
             if (!DEBUG_Disable_Music) {
                 musicPlayer.StartMusic();
             }
 
-            // // run countdown
-            // Countdown countdown = ui.GetComponentInChildren<Countdown>();
-            // if (countdown != null) {
-            //     countdown.StartCountdown();
-            // } else {
-            //     Debug.Log("countdown is null");
-            // }
+        }
 
-            // allow player control
+        void Update () {
+            // wait until both players have readied
 
-            // DEBUG
-            StartCoroutine(TEST_updateScore());
+            // start the game
+            if (!gameInProgress) {
+                StartGame();
+                gameInProgress = true;
+                return;
+            }          
+
+            if (timeLeft <= 0) {
+                StopGame();
+            }
+            // when the game is over determine the winner
+
+            // wait for player input to quit or restart game
+        }
+
+        void InitObjects () {
+            timeLeft = gameLengthInSeconds;
+            timerDisplay.UpdateTime(gameLengthInSeconds);
+
+            player1ScoreDisplay.ResetScore();
+            player2ScoreDisplay.ResetScore();
+
+            for (int i = 0; i < players.Length; ++i) {
+                // disable player input and reset position
+                players[i].GetComponent<PlayerInputManager>().inputsEnabled = false;
+                players[i].transform.position = startingPlayerPositions[i];
+            }
+        }
+
+        void StartGame () {
+            foreach (var player in players) {
+                // enable player input
+                player.GetComponent<PlayerInputManager>().inputsEnabled = true;
+            }
+            StartCoroutine(timerCoroutine);
+            StartCoroutine(TEST_scoreUpdateCoroutine);
+        }
+
+        void StopGame () {
+            StopCoroutine(timerCoroutine);
+            timerDisplay.ResetTime();
+            gameInProgress = false;
+
+            foreach (var player in players) {
+                // disable player input
+                player.GetComponent<PlayerInputManager>().inputsEnabled = false;
+            }
+            ResetGame();
+        }
+
+        void ResetGame () {
+            InitObjects();
         }
 
         public void UpdateScores () {
             // TODO: calculate scores for each player here
             player1ScoreDisplay.UpdateScore(Random.value);
             player2ScoreDisplay.UpdateScore(Random.value);
+        }
+
+        private IEnumerator startTimer() {
+            timerDisplay.ResetTime();
+            while (timeLeft > 0) {
+                timeLeft -= Time.deltaTime;
+                timerDisplay.UpdateTime(timeLeft);
+                yield return null;
+            }
+            timerDisplay.UpdateTime(0);
         }
 
         private IEnumerator TEST_updateScore() {

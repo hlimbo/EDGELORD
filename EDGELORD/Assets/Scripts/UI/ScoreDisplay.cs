@@ -8,7 +8,7 @@ public class ScoreDisplay : MonoBehaviour {
 
     private TMP_Text textBox;
 
-    void Start () {
+    void Awake () {
         textBox = GetComponent<TMP_Text>();
         textBox.text = scoreString + "0";
     }
