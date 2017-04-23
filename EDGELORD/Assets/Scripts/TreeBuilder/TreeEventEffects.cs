@@ -12,7 +12,7 @@ namespace EDGELORD.TreeBuilder
             _treeRoot.OnBranchCutAction += OnBranchCutEffects;
         }
 
-        private void OnBranchCutEffects()
+        private void OnBranchCutEffects(Vector3 worldPos)
         {
             //ToDo: Branch Cutting Events.
         }
