@@ -11,7 +11,7 @@ To play a sound effect, call playSoundEffect() with the name of the AudioClip,
 optionally specifying a volume to play it at.
 */
 
-public class SfxPlayer : MonoBehaviour {
+public class SfxPlayer : Singleton<SfxPlayer> {
     public float Volume = 1.0f;
     public AudioClip[] soundEffects;
 
