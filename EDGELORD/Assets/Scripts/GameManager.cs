@@ -13,7 +13,10 @@ namespace EDGELORD.Manager {
         private TimerDisplay timerDisplay;
         private WinnerDisplay winnerDisplay;
 
+        private GameObject[] winnerMessages;
+
         private bool gameInProgress;
+        private bool playersReady;
         private float timeLeft;
 
         private IEnumerator timerCoroutine;
@@ -36,11 +39,13 @@ namespace EDGELORD.Manager {
 
         void Start () {
             gameInProgress = false;
+            playersReady = false;
+
             musicPlayer = (MusicPlayer)FindObjectOfType<MusicPlayer>();
             //sfxPlayer = (SfxPlayer)FindObjectOfType(typeof(SfxPlayer));
             ui = (Canvas)FindObjectOfType<Canvas>();
             timerDisplay = ui.GetComponentInChildren<TimerDisplay>();
-            winnerDisplay = ui.GetComponentInChildren<WinnerDisplay>();
+            winnerDisplay = ui.GetComponent<WinnerDisplay>();
 
             Component[] playerScoreDisplays = ui.GetComponentsInChildren<ScoreDisplay>();
             player1ScoreDisplay = (ScoreDisplay)playerScoreDisplays[0];
@@ -52,9 +57,7 @@ namespace EDGELORD.Manager {
 
             InitObjects();
 
-            if (!DEBUG_Disable_Music) {
-                musicPlayer.StartMusic();
-            }
+            musicPlayer.StartMusic();
 
             var roots = FindObjectsOfType<TreeRoot>();
             if(roots.Length >= 2)
@@ -86,21 +89,24 @@ namespace EDGELORD.Manager {
                 
             }
 
+            // TODO: temporary
+            playersReady = true;
         }
 
         void Update () {
             // wait until both players have readied
 
             // start the game
-            if (!gameInProgress) {
+            if (!gameInProgress && playersReady) {
                 StartGame();
                 gameInProgress = true;
                 return;
             }          
 
-            if (timeLeft <= 0) {
+            if (timeLeft <= 0 && gameInProgress) {
                 StopGame();
-                // determine the winner
+                showWinner();
+                playersReady = false;
 
                 // if (true) { // TODO: get player input to restart the game here
                 //     ResetGame();
@@ -111,7 +117,7 @@ namespace EDGELORD.Manager {
         void InitObjects () {
             timeLeft = gameLengthInSeconds;
             timerDisplay.UpdateTime(gameLengthInSeconds);
-            if(winnerDisplay) winnerDisplay.Hide();
+            winnerDisplay.HideWindow();
 
             player1ScoreDisplay.ResetScore();
             player2ScoreDisplay.ResetScore();
@@ -136,6 +142,8 @@ namespace EDGELORD.Manager {
             timerDisplay.ResetTime();
             gameInProgress = false;
 
+            Debug.Log("game stopped");
+
             foreach (var player in players) {
                 // disable player input
                 player.GetComponent<PlayerInputManager>().inputsEnabled = false;
@@ -147,16 +155,16 @@ namespace EDGELORD.Manager {
         }
 
         private void showWinner () {
-            string winnerMessage;
+            string winner;
             if (Player1TreeRoot.TotalArea > Player2TreeRoot.TotalArea) {
-                winnerMessage = "Player 1 wins!";
+                winner = "PLAYER1";
             } else if (Player1TreeRoot.TotalArea < Player2TreeRoot.TotalArea) {
-                winnerMessage = "Player 2 wins!";
+                winner = "PLAYER2";
             } else {
-                winnerMessage = "Tie!";
+                winner = "TIE";
             }
 
-            winnerDisplay.ShowMessage(winnerMessage);
+            winnerDisplay.ShowMessage(winner);
         }
 
         public void UpdateScores () {
