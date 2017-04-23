@@ -283,10 +283,10 @@ namespace EDGELORD.TreeBuilder
             return closestObjectToBase;
         }
 
-        public Vector3 GetProjectedPosition(Vector3 worldPos)
+        public Vector3 GetProjectedPosition(Vector3 worldPos, bool isWorld = false)
         {
             var projVector = Vector3.Project(this.transform.InverseTransformPoint(worldPos), Vector3.up);
-            return this.transform.TransformPoint(projVector);
+            return (isWorld)? this.transform.TransformPoint(projVector) : projVector;
         }
 
     }
