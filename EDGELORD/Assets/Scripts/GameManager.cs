@@ -5,61 +5,66 @@ using TMPro;
 
 namespace EDGELORD.Manager {
     public class GameManager : Singleton<GameManager> {
-        private MusicPlayer musicPlayer;
-        private SfxPlayer sfxPlayer;
-        private Canvas ui;
 
         private ScoreDisplay player1ScoreDisplay;
         private ScoreDisplay player2ScoreDisplay;
         private TimerDisplay timerDisplay;
 
-        private bool isGameOver;
+        private bool gameInProgress;
         private float timeLeft;
+
+        public MusicPlayer musicPlayer;
+        //private SfxPlayer sfxPlayer;
+        public Canvas ui;
+        public GameObject[] players;
 
         public int gameLengthInSeconds = 60;
         public bool DEBUG_Disable_Music = false;
 
-        /* game field and other objects go here */
-
         protected GameManager () {}
 
-        void Awake () {
-            isGameOver = true;
-            musicPlayer = (MusicPlayer)FindObjectOfType(typeof(MusicPlayer));
-            sfxPlayer = (SfxPlayer)FindObjectOfType(typeof(SfxPlayer));
-            ui = (Canvas)FindObjectOfType(typeof(Canvas));
+        void Start () {
+            gameInProgress = false;
+            musicPlayer = (MusicPlayer)FindObjectOfType<MusicPlayer>();
+            //sfxPlayer = (SfxPlayer)FindObjectOfType(typeof(SfxPlayer));
+            ui = (Canvas)FindObjectOfType<Canvas>();
+            timerDisplay = ui.GetComponentInChildren<TimerDisplay>();
 
             Component[] playerScoreDisplays = ui.GetComponentsInChildren<ScoreDisplay>();
             player1ScoreDisplay = (ScoreDisplay)playerScoreDisplays[0];
             player2ScoreDisplay = (ScoreDisplay)playerScoreDisplays[1];
-            timerDisplay = ui.GetComponentInChildren<TimerDisplay>();
-            timeLeft = gameLengthInSeconds;
-            timerDisplay.UpdateTime(gameLengthInSeconds);
 
             InitObjects();
+        }
+
+        void Update () {
+            if (gameInProgress) {
+                return;
+            }           
             StartGame();
+            gameInProgress = true;
         }
 
         void InitObjects () {
-            // TODO: instantiate and setup playing field and player objects here
+            timeLeft = gameLengthInSeconds;
+            timerDisplay.UpdateTime(gameLengthInSeconds);
+
+            player1ScoreDisplay.ResetScore();
+            player2ScoreDisplay.ResetScore();
         }
 
         void StartGame () {
-            if (!isGameOver) {
-                return;
-            }
-
             if (!DEBUG_Disable_Music) {
                 musicPlayer.StartMusic();
             }
 
-            isGameOver = false;
             StartCoroutine(startTimer());
             StartCoroutine(TEST_updateScore());
         }
 
         void StopGame () {
 
+            gameInProgress = false;
         }
 
         public void UpdateScores () {
