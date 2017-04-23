@@ -62,11 +62,11 @@ public class HammerScript : MonoBehaviour
         else if(other.name.Equals("Anvil"))
         {
             animator.SetBool("canSwingHammer", false);
-            int r = Random.Range(0, sfxPlayer.soundEffects.Length);
-            if (r == 0)
-                sfxPlayer.PlaySoundEffect("anvil_hit_1");
-            else
-                sfxPlayer.PlaySoundEffect("anvil_hit_2");
+            //int r = Random.Range(0, sfxPlayer.soundEffects.Length);
+            //if (r == 0)
+            //    sfxPlayer.PlaySoundEffect("anvil_hit_1");
+            //else
+            //    sfxPlayer.PlaySoundEffect("anvil_hit_2");
 
             foreach (ParticleSystem particle in particles)
             {
