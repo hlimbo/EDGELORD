@@ -45,6 +45,11 @@ namespace EDGELORD.TreeBuilder
 
         }
 
+        public void OnSpriteSliced(SpriteSlicer2DSliceInfo info)
+        {
+            OwnerTreeBranch.OnSpriteSliced(info);
+        }
+
         //TODO: Create a helper function that obtains the most recently sliced game object.
         public SpriteSlicer2DSliceInfo GetMostRecentSlicedObject(List<SpriteSlicer2DSliceInfo> slicedObjectInfo)
         {
