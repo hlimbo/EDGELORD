@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: d96626f19662ca34f850d0c80d7844ba
+timeCreated: 1492929140
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Dark Crystal Outline
+  fontNames:
+  - Dark Crystal Outline
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
