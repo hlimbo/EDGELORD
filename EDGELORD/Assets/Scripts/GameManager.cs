@@ -16,6 +16,8 @@ namespace EDGELORD.Manager {
         private IEnumerator timerCoroutine;
         private IEnumerator TEST_scoreUpdateCoroutine;
 
+        private Vector3[] startingPlayerPositions;
+
         public MusicPlayer musicPlayer;
         //private SfxPlayer sfxPlayer;
         public Canvas ui;
@@ -40,6 +42,8 @@ namespace EDGELORD.Manager {
             timerCoroutine = startTimer();
             TEST_scoreUpdateCoroutine = TEST_updateScore();
 
+            startingPlayerPositions = new Vector3[] { players[0].transform.position, players[1].transform.position };
+
             InitObjects();
 
             if (!DEBUG_Disable_Music) {
@@ -49,11 +53,21 @@ namespace EDGELORD.Manager {
         }
 
         void Update () {
+            // wait until both players have readied
+
+            // start the game
             if (!gameInProgress) {
                 StartGame();
                 gameInProgress = true;
                 return;
-            }           
+            }          
+
+            if (timeLeft <= 0) {
+                StopGame();
+            }
+            // when the game is over determine the winner
+
+            // wait for player input to quit or restart game
         }
 
         void InitObjects () {
@@ -63,14 +77,17 @@ namespace EDGELORD.Manager {
             player1ScoreDisplay.ResetScore();
             player2ScoreDisplay.ResetScore();
 
-            foreach (var player in players) {
-                // disable player input
+            for (int i = 0; i < players.Length; ++i) {
+                // disable player input and reset position
+                players[i].GetComponent<PlayerInputManager>().inputsEnabled = false;
+                players[i].transform.position = startingPlayerPositions[i];
             }
         }
 
         void StartGame () {
             foreach (var player in players) {
                 // enable player input
+                player.GetComponent<PlayerInputManager>().inputsEnabled = true;
             }
             StartCoroutine(timerCoroutine);
             StartCoroutine(TEST_scoreUpdateCoroutine);
@@ -80,6 +97,16 @@ namespace EDGELORD.Manager {
             StopCoroutine(timerCoroutine);
             timerDisplay.ResetTime();
             gameInProgress = false;
+
+            foreach (var player in players) {
+                // disable player input
+                player.GetComponent<PlayerInputManager>().inputsEnabled = false;
+            }
+            ResetGame();
+        }
+
+        void ResetGame () {
+            InitObjects();
         }
 
         public void UpdateScores () {
