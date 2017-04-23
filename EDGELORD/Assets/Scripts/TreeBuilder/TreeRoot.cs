@@ -30,6 +30,7 @@ namespace EDGELORD.TreeBuilder
             var go = GameObject.Instantiate(BranchPrefab, data.LocalBasePoint, Quaternion.identity);
             TreeBranch branch = go.GetComponent<TreeBranch>();
             branch.Generate(data);
+            branch.OwningPlayer = OwningPlayer;
 
             data.ParentBranch.AddChildBranch(branch);
             BranchList.Add(branch);
