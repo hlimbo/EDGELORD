@@ -53,6 +53,8 @@ public class SlicingTests : MonoBehaviour {
             //Case 2 reparent branches to proper slices if main part of the sword is cut in half
             //DONE: Reparent the children branches attached to the base of the sliced object.
             SpriteSlicer2DSliceInfo info = GetMostRecentSlicedObject(slicedObjectInfo);
+
+            //ReparentBranchesToSlicedObjects(SpriteSlicer2DSliceInfo recentInfo, 
             GameObject slicedObject = info.SlicedObject;
             List<GameObject> slicedPieces = info.ChildObjects;
 
