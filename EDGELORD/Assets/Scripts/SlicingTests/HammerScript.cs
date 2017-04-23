@@ -2,26 +2,57 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HammerScript : MonoBehaviour {
+//TODO: Get hammer to swing with input.
+public class HammerScript : MonoBehaviour
+{
+    public Players.PlayerID playerID;
 
-    public GameObject hammer;
+    private Animator animator;
+    private SfxPlayer sfxPlayer;
+    private PlayerInputManager inputs;
 
-    //in DEGREES
-    public float minAngle = -45, maxAngle = 45;
-    public float speedPercent = 0.25f;
+    public Animation animation;
 
-
-    void Start()
+    void  Start()
     {
-        hammer.transform.eulerAngles = new Vector3(0.0f, 0.0f, minAngle);
+        animator = GetComponent<Animator>();
+        sfxPlayer = FindObjectOfType<SfxPlayer>();
 
-        float lerpValue = Mathf.LerpAngle(minAngle, maxAngle, Time.deltaTime * speedPercent);
+        // get reference to the player's PlayerInputManager to read inputs
+        string playerToFind = null;
+        if (playerID == Players.PlayerID.Player_1)
+        {
+            playerToFind = "Player1";
+        }
+        else if (playerID == Players.PlayerID.Player_2)
+        {
+            playerToFind = "Player2";
+        }
 
+        if(playerToFind != null)
+        {
+            inputs = (PlayerInputManager)GameObject.Find(playerToFind).GetComponent<PlayerInputManager>();
+        }
+
+        animator.StopPlayback();
     }
 
-	void Update ()
+    void Update()
     {
-        hammer.transform.Rotate(Vector3.forward, minAngle);
-       // hammer.transform.eulerAngles = new Vector3(hammer.transform.eulerAngles.x, hammer.transform.eulerAngles.y, );
-	}
+        if(inputs.getActionDown())
+        {
+            animator.SetBool("canSwingHammer", true);
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.name.Equals("Anvil"))
+        {
+            Debug.Log("anvil");
+            animator.SetBool("canSwingHammer", false);
+        }
+    }
+
+
 }
