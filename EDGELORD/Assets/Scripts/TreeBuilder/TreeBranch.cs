@@ -30,6 +30,9 @@ namespace EDGELORD.TreeBuilder
         public float defaultLength = 3.2f;
         public float defaultWidth = 0.5f;
 
+        [Space]
+        public float Area;
+
         private void Start()
         {
             GetTreeRoot();
