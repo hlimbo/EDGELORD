@@ -11,6 +11,7 @@ public class HammerRotation : MonoBehaviour {
     private BoxCollider2D collider;
     private bool smithing;
     private float maxRotation;
+    private SfxPlayer sfxPlayer;
 
     private IEnumerator dropHammerCoroutineVar;
 
@@ -18,6 +19,7 @@ public class HammerRotation : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         maxRotation = maxRotationRawInput;
+        sfxPlayer = FindObjectOfType<SfxPlayer>();
 
         // hammerTransform starts at horizontal
         hammerTransform = GetComponent<Transform>();
@@ -43,16 +45,31 @@ public class HammerRotation : MonoBehaviour {
 	void Update () {
         if (!smithing && inputs.getActionDown()) {
             Debug.Log("got ActionDown");
-            SwingHammer();
             smithing = true;
+            SwingHammer();
+            // StartCoroutine(swingAndSetPower());
         }
 	}
+
+    private IEnumerator swingAndSetPower () {
+        yield return swingHammerCoroutine();
+        float deltaRotation = maxRotation * Time.deltaTime;
+        while (!inputs.getActionDown()) {
+            if (hammerTransform.eulerAngles.z < maxRotation) {
+                Debug.Log("rotating hammer");
+                RotateHammer(deltaRotation);
+            }
+            yield return null;
+        }
+        yield return dropHammerCoroutineVar;
+    }
 
     void OnCollisionEnter2D (Collision2D coll) {
         if (coll.gameObject.name == "Anvil") {
             StopCoroutine(dropHammerCoroutineVar);
             dropHammerCoroutineVar = dropHammerCoroutine();
             smithing = false;
+            sfxPlayer.PlaySoundEffect("anvil_hit_1");
         }
     }
 
@@ -63,7 +80,7 @@ public class HammerRotation : MonoBehaviour {
     }
 
     void RotateHammer (float degrees) {
-
+        hammerTransform.Rotate(0, 0, degrees);
     }
 
     // swings hammer starting from its current rotation
@@ -72,7 +89,7 @@ public class HammerRotation : MonoBehaviour {
     }
 
     // raise hammer from horizontal
-    private IEnumerator raiseHammerCoroutine (float degrees, float lengthInSeconds = 0.3f) {
+    private IEnumerator raiseHammerCoroutine (float degrees, float lengthInSeconds = 0.2f) {
         float startTime = Time.time;
         float deltaRotation = degrees / (lengthInSeconds / Time.deltaTime);
 
@@ -85,6 +102,7 @@ public class HammerRotation : MonoBehaviour {
     }
 
     private IEnumerator dropHammerCoroutine (float lengthInSeconds = 0.1f) {
+        Debug.Log("dropping hammer");
         float startTime = Time.time;
         float deltaRotation = (360 - hammerTransform.eulerAngles.z) / (lengthInSeconds / Time.deltaTime);
 
