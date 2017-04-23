@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq; // for All()
 using EDGELORD.TreeBuilder;
 using Players;
 using UnityEngine;
@@ -90,16 +91,13 @@ namespace EDGELORD.Manager {
                 
             }
 
-            // TODO: temporary
-            playersReady = true;
-
-            if (!DEBUG_Disable_Music) {
-                musicPlayer.StartMusic();
-            }
         }
 
         void Update () {
             // wait until both players have readied
+            if (!playersReady) {
+                playersReady = players.All(player => player.GetComponent<CharacterActionScript>().isReady);
+            }
 
             // start the game
             if (!gameInProgress && playersReady) {
@@ -111,6 +109,7 @@ namespace EDGELORD.Manager {
             if (timeLeft <= 0 && gameInProgress) {
                 StopGame();
                 showWinner();
+                gameInProgress = false;
                 playersReady = false;
 
                 // if (true) { // TODO: get player input to restart the game here
@@ -127,10 +126,13 @@ namespace EDGELORD.Manager {
             player1ScoreDisplay.ResetScore();
             player2ScoreDisplay.ResetScore();
 
-            disablePlayerInput(true);
+            // disablePlayerMovement(true);
         }
 
         void StartGame () {
+            if (!DEBUG_Disable_Music) {
+                musicPlayer.StartMusic();
+            }
             enablePlayerInput();
             StartCoroutine(startGameWithCountdown());
         }
@@ -149,14 +151,14 @@ namespace EDGELORD.Manager {
         void StopGame () {
             StopCoroutine(timerCoroutine);
             timerDisplay.ResetTime();
-            gameInProgress = false;
 
             Debug.Log("game stopped");
+            musicPlayer.FadeOutAndStop();
 
             disablePlayerInput();
         }
 
-        void ResetGame () {
+        public void ResetGame () {
             InitObjects();
         }
 
@@ -200,16 +202,22 @@ namespace EDGELORD.Manager {
 
         private void enablePlayerInput() {
             foreach (var player in players) {
-                player.GetComponent<PlayerInputManager>().inputsEnabled = true;
+                player.GetComponent<CharacterMovementScript>().movementEnabled = true;
             }
         }
 
-        private void disablePlayerInput(bool resetPosition = false) {
+        private void disablePlayerMovement(bool resetPosition = false) {
             for (int i = 0; i < players.Length; ++i) {
-                players[i].GetComponent<PlayerInputManager>().inputsEnabled = false;
+                players[i].GetComponent<CharacterMovementScript>().movementEnabled = false;
                 if (resetPosition) {
                     players[i].transform.position = startingPlayerPositions[i];
                 }
+            }
+        }
+
+        private void disablePlayerInput() {
+            for (int i = 0; i < players.Length; ++i) {
+                players[i].GetComponent<PlayerInputManager>().inputsEnabled = false;
             }
         }
     }
