@@ -17,6 +17,8 @@ namespace EDGELORD.TreeBuilder
     {
         public PlayerID OwningPlayer;
         public List<TreeBranch> DirectChildBranches = new List<TreeBranch>();
+        //public Dictionary<TreeBranch, float> ChildDictionary = new Dictionary<TreeBranch, float>();
+        public float ProjectedDistanceFromParent;
         //public 
         [Space]
         public GameObject SpriteHolder; 
@@ -52,13 +54,13 @@ namespace EDGELORD.TreeBuilder
             }
         }
 
-        public TreeBranch CreateChildBranch(TreeBranchData data, GameObject branchPrefab)
+        public void AddChildBranch(TreeBranch childBranch)
         {
-            var go = GameObject.Instantiate(branchPrefab, data.LocalBasePoint, Quaternion.identity);
-            var branch = go.GetComponent<TreeBranch>();
-
-            return branch;
+            var projectedDistance = Vector3.Project(childBranch.BranchData.LocalBasePoint, Vector3.up);
+            childBranch.ProjectedDistanceFromParent = projectedDistance.magnitude;
+            DirectChildBranches.Add(childBranch);
         }
+
         // Call this when the Branch is created.
         public void Generate(TreeBranchData data, bool doCoroutine = true)
         {
@@ -69,6 +71,7 @@ namespace EDGELORD.TreeBuilder
             var rot = Quaternion.LookRotation(Vector3.forward, (Vector3)data.GrowDirection.normalized);
             this.transform.rotation = rot;
             var targetScale = GetNewProportions(data.Length, data.Width);
+            SendCutEvents(this.transform.position, this.transform.position + (Vector3)data.GrowDirection*data.Length);
             if (doCoroutine)
             {
                 StartCoroutine(CoLerpGenerate(this.SpriteHolder.transform, targetScale));
@@ -77,7 +80,29 @@ namespace EDGELORD.TreeBuilder
             {
                 this.SpriteHolder.transform.localScale = targetScale;
             }
+
         }
+
+        private void SendCutEvents(Vector3 startPoint, Vector3 endPoint)
+        {
+            Debug.DrawLine(startPoint, endPoint, Color.red);
+            Vector3 toEndPoint = endPoint - startPoint;
+            RaycastHit2D[] hits = Physics2D.RaycastAll(startPoint, toEndPoint.normalized, toEndPoint.magnitude);
+            foreach (RaycastHit2D hit in hits)
+            {
+                if(hit.transform.root == this.transform.root) continue;
+                if (hit.rigidbody)
+                {
+                    var sp = hit.rigidbody.GetComponent<TreeBranch_Sprite>();
+                    if (sp)
+                    {
+                        sp.OwnerTreeBranch.SliceThisBranch(startPoint, endPoint);
+                        //SpriteSlicer2D.SliceAllSprites(startPoint, endPoint);
+                    }
+                }
+            }
+        }
+
 
         private Vector3 GetNewProportions(float targetLength, float targetWidth)
         {
@@ -88,10 +113,14 @@ namespace EDGELORD.TreeBuilder
             return newScale;
         }
 
-        public void SliceBranch(Vector3 worldStartPoint, Vector3 worldEndPoint, GameObject cutGameObject)
+        public void OnSpriteSliced(SpriteSlicer2DSliceInfo info)
+        {
+            Debug.Log("TEST SLICE CALLBACK");
+        }
+        public void SliceThisBranch(Vector3 worldStartPoint, Vector3 worldEndPoint)
         {
             List<SpriteSlicer2DSliceInfo> sliceInfoList = new List<SpriteSlicer2DSliceInfo>();
-            SpriteSlicer2D.SliceSprite(worldStartPoint, worldEndPoint, cutGameObject, false, ref sliceInfoList);
+            SpriteSlicer2D.SliceSprite(worldStartPoint, worldEndPoint, branchSprite.gameObject, false, ref sliceInfoList);
             
             HandleSliceReparenting(sliceInfoList);
 
@@ -101,21 +130,11 @@ namespace EDGELORD.TreeBuilder
         {
             branchSprite.HandleSlice(sliceInfo);
 
-            //SpriteSlicer2DSliceInfo info = GetMostRecentSlicedObject(sliceInfo);
-            //GameObject closestChild = GetSlicedObjectClosestToBase(info, this.gameObject);
-
-            //foreach (Transform child in transform)
-            //{
-            //    var ss = child.GetComponent<SlicedSprite>();
-            //    if (ss)
-            //    {
-
-            //    }
-            //}
-
-
-
-            //SpriteSlicer2DSliceInfo info = sliceInfo[0];
+            SpriteSlicer2DSliceInfo info = GetMostRecentSlicedObject(sliceInfo);
+            if (info == null)
+            {
+                
+            }
             List<GameObject> childObjects = new List<GameObject>();
             foreach (Transform child in SpriteHolder.transform)
             {
@@ -130,9 +149,12 @@ namespace EDGELORD.TreeBuilder
                         sp = child.gameObject.AddComponent<TreeBranch_Sprite>();
                         sp.OwnerTreeBranch = this;
                     }
+                    var spriteCenterPos = sp.GetComponent<Renderer>().bounds.center;
+                    var projectedDist = Vector3.Project(this.transform.InverseTransformPoint(spriteCenterPos), Vector3.up);
                 }
             }
             Debug.Log(childObjects.Count);
+            if(childObjects.Count < 1) return;
             GameObject closestGameObject = childObjects[0];
             float closestDist = Vector3.Distance(transform.position, closestGameObject.GetComponent<SlicedSprite>().MeshRenderer.bounds.center);
             foreach (GameObject child in childObjects)
@@ -144,34 +166,35 @@ namespace EDGELORD.TreeBuilder
                     closestGameObject = child;
                 }
             }
+            var projectedEnterDist = Vector3.Project(this.transform.InverseTransformPoint(info.SliceEnterWorldPosition), Vector3.up);
+            var projectedExitDist = Vector3.Project(this.transform.InverseTransformPoint(info.SliceExitWorldPosition), Vector3.up);
+            float projectedCutOffDistance = Mathf.Min(projectedEnterDist.magnitude, projectedExitDist.magnitude);
             foreach (GameObject child in childObjects)
             {
                 if (child != closestGameObject)
                 {
                     child.GetComponent<Rigidbody2D>().isKinematic = false;
+
+                    var spriteCenterPos = child.GetComponent<Renderer>().bounds.center;
+                    var projectedDist = Vector3.Project(this.transform.InverseTransformPoint(spriteCenterPos), Vector3.up).magnitude;
+                    //if (projectedDist > projectedCutOffDistance)
+                    //{
+
+                        foreach (TreeBranch branch in DirectChildBranches)
+                        {
+                            if (branch.ProjectedDistanceFromParent > projectedCutOffDistance)
+                            {
+                                branch.transform.parent = child.transform;
+                            }
+                        }
+                    //}
                     //var projectedDistanceFromRoot = 
+
+                    child.transform.parent = null;
+                    child.gameObject.layer = 9; // "NoCollision" Layer.
                 }
             }
-            closestGameObject.GetComponent<Rigidbody2D>().isKinematic = true;
-
-            //foreach (GameObject go in info.ChildObjects)
-            //{
-            //    var rb = go.GetComponent<Rigidbody2D>();
-            //    if (rb) rb.isKinematic = false;
-            //}
-            //if (closestChild != null)
-            //{
-            //    Debug.Log(closestChild.name);
-            //    closestChild.GetComponent<Rigidbody2D>().isKinematic = true;
-            //}
-
-            //GameObject[] slicedPieces = 
-            //float sliceDistanceFromRoot = 
-            //Todo: Rechild children to each appropriate part.
-
-            //Todo: Find sliced piece to remain attached, and replace the old one it with the new one.
-
-            //ToDo: Add Rigidbody to unattached piece, and destroy it after a period of time. 
+            closestGameObject.GetComponent<Rigidbody2D>().isKinematic = true; 
         }
 
 
@@ -209,6 +232,8 @@ namespace EDGELORD.TreeBuilder
             {
                 return slicedObjectInfo[0];
             }
+            if (slicedObjectInfo.Count < 1)
+                return null;
 
             //GET THE last object in the array is the most recently sliced.
             int recentlySlicedIndex = slicedObjectInfo.Count - 1;
@@ -236,3 +261,41 @@ namespace EDGELORD.TreeBuilder
 
     }
 }
+/*
+ * 
+ * 
+ *      SpriteSlicer2D.SliceAllSprites(startPoint, endPoint, canDestroyParent, ref slicedObjectInfo, slicableMask);
+
+            //Case 2 reparent branches to proper slices if main part of the sword is cut in half
+            //DONE: Reparent the children branches attached to the base of the sliced object.
+            SpriteSlicer2DSliceInfo info = GetMostRecentSlicedObject(slicedObjectInfo);
+            GameObject slicedObject = info.SlicedObject;
+            List<GameObject> slicedPieces = info.ChildObjects;
+
+            //obtain all the branches from the slicedObject.
+            List<GameObject> branches = new List<GameObject>();
+            for (int i = 0; i < slicedObject.transform.childCount; ++i)
+                branches.Add(slicedObject.transform.GetChild(i).gameObject);
+
+            //detach branches from deactivated parent object
+            slicedObject.transform.DetachChildren();
+
+            foreach(GameObject branch in branches)
+            {
+                //obtain which branch is closer of the 2 slicedPiece objects
+                float d1 = Vector3.Distance(slicedPieces[0].GetComponent<SlicedSprite>().MeshRenderer.bounds.center, branch.transform.position);
+                float d2 = Vector3.Distance(slicedPieces[1].GetComponent<SlicedSprite>().MeshRenderer.bounds.center, branch.transform.position);
+
+                //float d1 = Vector3.Distance(branch.transform.position, slicedPieces[0].GetComponent<SlicedSprite>().MeshRenderer.bounds.center);
+                //float d2 = Vector3.Distance(branch.transform.position, slicedPieces[1].GetComponent<SlicedSprite>().MeshRenderer.bounds.center);
+
+                //if slicedPieces[0] is further away from slicedPieces[1] -> attach branch to slicedPieces[1]
+                if (d1 > d2)
+                    branch.transform.SetParent(slicedPieces[1].transform, true);
+                else
+                    branch.transform.SetParent(slicedPieces[0].transform, true);
+            }
+
+ * 
+ * 
+ * */

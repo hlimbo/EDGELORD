@@ -66,7 +66,7 @@ namespace EDGELORD.TreeBuilder
 	    {
 	        TreeBranchData b = new TreeBranchData();
 	        b.Length = aimVector.magnitude;
-	        b.Width = 1f; // Apply "Golden ratio" with length?
+	        b.Width = 0.5f; // Apply "Golden ratio" with length?
 	        b.GrowDirection = aimVector.normalized;
 	        b.ParentBranch = currentTargetBranch;
 	        b.LocalBasePoint = b.ParentBranch.transform.InverseTransformPoint(startPos);
