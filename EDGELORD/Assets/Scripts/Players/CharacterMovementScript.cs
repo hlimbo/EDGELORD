@@ -19,9 +19,7 @@ public class CharacterMovementScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if (movementEnabled) {
-            print(inputs.getMovementDirection()*moveSpeed);
             Vector2 direction = Vector2.ClampMagnitude(Vector2.MoveTowards(rigid.velocity, moveSpeed * inputs.getMovementDirection(), moveSpeed * acceleration * Time.deltaTime), moveSpeed);
-            print(direction);
             rigid.velocity = direction;
         }
         else {
