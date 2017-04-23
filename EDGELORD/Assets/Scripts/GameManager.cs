@@ -11,6 +11,7 @@ namespace EDGELORD.Manager {
         private ScoreDisplay player1ScoreDisplay;
         private ScoreDisplay player2ScoreDisplay;
         private TimerDisplay timerDisplay;
+        private WinnerDisplay winnerDisplay;
 
         private bool gameInProgress;
         private float timeLeft;
@@ -39,13 +40,13 @@ namespace EDGELORD.Manager {
             //sfxPlayer = (SfxPlayer)FindObjectOfType(typeof(SfxPlayer));
             ui = (Canvas)FindObjectOfType<Canvas>();
             timerDisplay = ui.GetComponentInChildren<TimerDisplay>();
+            winnerDisplay = ui.GetComponentInChildren<WinnerDisplay>();
 
             Component[] playerScoreDisplays = ui.GetComponentsInChildren<ScoreDisplay>();
             player1ScoreDisplay = (ScoreDisplay)playerScoreDisplays[0];
             player2ScoreDisplay = (ScoreDisplay)playerScoreDisplays[1];
 
             timerCoroutine = startTimer();
-            //TEST_scoreUpdateCoroutine = TEST_updateScore();
 
             startingPlayerPositions = new Vector3[] { players[0].transform.position, players[1].transform.position };
 
@@ -99,15 +100,18 @@ namespace EDGELORD.Manager {
 
             if (timeLeft <= 0) {
                 StopGame();
-            }
-            // when the game is over determine the winner
+                // determine the winner
 
-            // wait for player input to quit or restart game
+                // if (true) { // TODO: get player input to restart the game here
+                //     ResetGame();
+                // }
+            }
         }
 
         void InitObjects () {
             timeLeft = gameLengthInSeconds;
             timerDisplay.UpdateTime(gameLengthInSeconds);
+            winnerDisplay.Hide();
 
             player1ScoreDisplay.ResetScore();
             player2ScoreDisplay.ResetScore();
@@ -125,7 +129,6 @@ namespace EDGELORD.Manager {
                 player.GetComponent<PlayerInputManager>().inputsEnabled = true;
             }
             StartCoroutine(timerCoroutine);
-            StartCoroutine(TEST_scoreUpdateCoroutine);
         }
 
         void StopGame () {
@@ -137,11 +140,23 @@ namespace EDGELORD.Manager {
                 // disable player input
                 player.GetComponent<PlayerInputManager>().inputsEnabled = false;
             }
-            ResetGame();
         }
 
         void ResetGame () {
             InitObjects();
+        }
+
+        private void showWinner () {
+            string winnerMessage;
+            if (Player1TreeRoot.TotalArea > Player2TreeRoot.TotalArea) {
+                winnerMessage = "Player 1 wins!";
+            } else if (Player1TreeRoot.TotalArea < Player2TreeRoot.TotalArea) {
+                winnerMessage = "Player 2 wins!";
+            } else {
+                winnerMessage = "Tie!";
+            }
+
+            winnerDisplay.ShowMessage(winnerMessage);
         }
 
         public void UpdateScores () {
@@ -167,13 +182,6 @@ namespace EDGELORD.Manager {
                 yield return null;
             }
             timerDisplay.UpdateTime(0);
-        }
-
-        private IEnumerator TEST_updateScore() {
-            while (true) {
-                yield return new WaitForSeconds(1);
-                UpdateScores();
-            }
         }
     }
 }

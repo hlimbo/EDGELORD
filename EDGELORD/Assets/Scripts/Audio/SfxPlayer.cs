@@ -32,6 +32,9 @@ public class SfxPlayer : Singleton<SfxPlayer> {
 			Debug.Log("adding " + clip.name + " to soundEffectsDict");
 			soundEffectsDict[clip.name] = clip;
 		}
+
+        // randomize pitch a bit to (hopefully) avoid multiplying amplitude for simultaneous sounds
+        audioSource.pitch += (Random.value - 0.5f) * 1;
 	}
 
 	public void PlaySoundEffect(string name, float volume = 1.0f) {
