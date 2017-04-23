@@ -10,6 +10,7 @@ namespace EDGELORD.TreeBuilder
         public Transform treeStart;
         public KeyCode testKey;
         public PolygonCollider2D myCollider;
+        public CompositeCollider2D myComposite;
         private void Start()
         {
             
@@ -36,9 +37,11 @@ namespace EDGELORD.TreeBuilder
                 //AllPoints.AddRange(c.points);
 
             }
+            myCollider.points = AllPoints.ToArray();
+            Debug.Log(myComposite.pointCount);
+
             var area = Area(ref AllPoints);
             Debug.Log(area);
-            myCollider.points = AllPoints.ToArray();
 
         }
         // Get the area of the given polygon
