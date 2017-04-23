@@ -40,6 +40,7 @@ namespace EDGELORD.TreeBuilder
         private void Start()
         {
             GetTreeRoot();
+            OnSliceBranch += MyRoot.OnBranchCutAction;
         }
 
         private void GetTreeRoot()
