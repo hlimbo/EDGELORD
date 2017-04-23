@@ -27,7 +27,7 @@ namespace EDGELORD.TreeBuilder
             CurrentHoverBranch = StartBranch;
             StartBranch.SetTint(BranchTint, branchSortOrderIndex);
             BranchList.Add(StartBranch);
-            OnBranchCutAction += vector3 => { OnUpdateTreeCollider(); UpdateTotalArea(); };
+            OnBranchCutAction += vector3 => { OnUpdateTreeCollider(); UpdateTotalArea(); Debug.Log("Area!"); };
             UpdateTotalArea();
         }
         public void CreateBranch(TreeBranchData data)

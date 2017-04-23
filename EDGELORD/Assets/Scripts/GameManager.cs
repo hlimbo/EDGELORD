@@ -111,7 +111,7 @@ namespace EDGELORD.Manager {
         void InitObjects () {
             timeLeft = gameLengthInSeconds;
             timerDisplay.UpdateTime(gameLengthInSeconds);
-            winnerDisplay.Hide();
+            if(winnerDisplay) winnerDisplay.Hide();
 
             player1ScoreDisplay.ResetScore();
             player2ScoreDisplay.ResetScore();
