@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Players;
 using UnityEngine;
+using EDGELORD.Manager;
 
 public class CharacterActionScript : MonoBehaviour {
     public float overlapRadius;
@@ -14,8 +15,14 @@ public class CharacterActionScript : MonoBehaviour {
     public float minWidth;
     public float maxWidth;
 
-    private bool smithing;
 
+
+    private bool smithing;
+    private bool ready;
+
+    public bool isReady { get { return ready; } }
+
+    GameManager manager;
     PlayerInputManager inputs;
     CharacterMovementScript movement;
     EDGELORD.TreeBuilder.TreeRoot root;
@@ -26,6 +33,7 @@ public class CharacterActionScript : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
+        manager = GameObject.FindObjectOfType<GameManager>();
         inputs = GetComponent<PlayerInputManager>();
         movement = GetComponent<CharacterMovementScript>();
         foreach (EDGELORD.TreeBuilder.TreeRoot treeRoot in GameObject.FindObjectsOfType<EDGELORD.TreeBuilder.TreeRoot>()) {
@@ -43,20 +51,26 @@ public class CharacterActionScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (smithing == false) {
-            if (inputs.getActionDown()) {
-                //Do Something
-                Collider2D collider = Physics2D.OverlapCircle(transform.position, overlapRadius, LayerMask.GetMask("Default"));
-                if (collider != null) {
-                    sfxPlayer.PlaySoundEffect("sword_hit");
-                    EDGELORD.TreeBuilder.TreeBranch branch = collider.transform.GetComponentInParent<EDGELORD.TreeBuilder.TreeBranch>();
-                    if (branch.OwningPlayer == OwningPlayer) {
-                        smithing = true;
-                        movement.movementEnabled = false;
-                        transform.position = branch.GetProjectedPosition(transform.position, true);
-                        StartCoroutine(setDirectionAndPower(branch));
+        if (manager.gameRunning) {
+            if (!smithing) {
+                if (inputs.getActionDown()) {
+                    Collider2D collider = Physics2D.OverlapCircle(transform.position, overlapRadius, LayerMask.GetMask("Default"));
+                    if (collider != null) {
+                        sfxPlayer.PlaySoundEffect("sword_hit");
+                        EDGELORD.TreeBuilder.TreeBranch branch = collider.transform.GetComponentInParent<EDGELORD.TreeBuilder.TreeBranch>();
+                        if (branch.OwningPlayer == OwningPlayer) {
+                            smithing = true;
+                            movement.movementEnabled = false;
+                            transform.position = branch.GetProjectedPosition(transform.position, true);
+                            StartCoroutine(setDirectionAndPower(branch));
+                        }
                     }
                 }
+            }
+        }
+        else {
+            if (inputs.getActionDown()) {
+                ready = true;
             }
         }
 	}
@@ -90,5 +104,9 @@ public class CharacterActionScript : MonoBehaviour {
         bladeScript.setScale(new Vector2(1,1));
         ghostBlade.gameObject.SetActive(false);
         yield return null;
+    }
+
+    public void setNotReady(){
+        ready = false;
     }
 }

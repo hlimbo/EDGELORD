@@ -8,6 +8,8 @@ using TMPro;
 namespace EDGELORD.Manager {
     public class GameManager : Singleton<GameManager> {
 
+        public bool gameRunning { get { return gameInProgress; } }
+
         private ScoreDisplay player1ScoreDisplay;
         private ScoreDisplay player2ScoreDisplay;
         private TimerDisplay timerDisplay;
