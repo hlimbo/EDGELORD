@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Players;
 using UnityEngine;
 
 public class CharacterActionScript : MonoBehaviour {
     public float overlapRadius;
+    public PlayerID OwningPlayer;
 
     private bool smithing;
 
@@ -11,11 +13,15 @@ public class CharacterActionScript : MonoBehaviour {
     CharacterMovementScript movement;
     EDGELORD.TreeBuilder.TreeRoot root;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start() {
         inputs = GetComponent<PlayerInputManager>();
         movement = GetComponent<CharacterMovementScript>();
-        root = GameObject.Find("TreeRoot").GetComponent<EDGELORD.TreeBuilder.TreeRoot>();
+        foreach (EDGELORD.TreeBuilder.TreeRoot treeRoot in GameObject.FindObjectsOfType<EDGELORD.TreeBuilder.TreeRoot>()) {
+            if (OwningPlayer == treeRoot.OwningPlayer) {
+                root = treeRoot;
+            }
+        }
         smithing = false;
 	}
 	
