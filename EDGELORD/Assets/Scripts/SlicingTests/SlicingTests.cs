@@ -54,7 +54,7 @@ public class SlicingTests : MonoBehaviour {
             //DONE: Reparent the children branches attached to the base of the sliced object.
             SpriteSlicer2DSliceInfo info = GetMostRecentSlicedObject(slicedObjectInfo);
 
-            //ReparentBranchesToSlicedObjects(SpriteSlicer2DSliceInfo recentInfo, 
+            //ReparentBranchesToSlicedObjects(SpriteSlicer2DSliceInfo recentInfo)
             GameObject slicedObject = info.SlicedObject;
             List<GameObject> slicedPieces = info.ChildObjects;
 
