@@ -41,13 +41,13 @@ public class CharacterActionScript : MonoBehaviour {
         float length = 0;
         while (!inputs.getActionDown()) {
             direction += inputs.getMovementDirection().x*0.5f;
-            print(direction);
-            length += inputs.getMovementDirection().y*0.2f;
+            length += inputs.getMovementDirection().y*0.1f;
+            print(length);
             yield return null;
         }
         direction *= Mathf.Deg2Rad;
         direction += Mathf.PI / 2;
-        root.CreateBranch(new EDGELORD.TreeBuilder.TreeBranchData(length, length*0.33f, branch.transform.TransformDirection(new Vector2(-Mathf.Cos(direction), Mathf.Sin(direction))), branch, branch.transform.InverseTransformPoint(transform.position)));
+        root.CreateBranch(new EDGELORD.TreeBuilder.TreeBranchData(length, 2.0f/length, branch.transform.TransformDirection(new Vector2(-Mathf.Cos(direction), Mathf.Sin(direction))), branch, branch.transform.InverseTransformPoint(transform.position)));
         smithing = false;
         movement.movementEnabled = true;
         yield return null;
