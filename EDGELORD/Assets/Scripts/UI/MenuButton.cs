@@ -3,14 +3,14 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-public class StartButton : MonoBehaviour {
+public class MenuButton : MonoBehaviour {
     private Button button;
+    public string sceneName;
 
 	// Use this for initialization
 	void Awake () {
         button = GetComponent<Button>();
         button.onClick.AddListener(LoadMainGame);
-
 	}
 
     void LoadMainGame () {
@@ -21,6 +21,6 @@ public class StartButton : MonoBehaviour {
         MusicPlayer musicPlayer = (MusicPlayer)FindObjectOfType(typeof(MusicPlayer));
         musicPlayer.FadeOutAndStop(0.9f);
         yield return new WaitForSeconds(1.0f);
-        SceneManager.LoadScene("GameManager"); // TODO: change this to name of the final main-game scene
+        SceneManager.LoadScene(sceneName);
     }
 }
