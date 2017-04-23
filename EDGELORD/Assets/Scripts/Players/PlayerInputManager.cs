@@ -31,7 +31,7 @@ public class PlayerInputManager : MonoBehaviour {
             return new Vector2(horizontal, vertical);
         }
         else {
-            return new Vector2();
+            return new Vector2(0,0);
         }
     }
 

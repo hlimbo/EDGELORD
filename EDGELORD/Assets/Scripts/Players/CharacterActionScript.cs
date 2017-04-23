@@ -11,6 +11,8 @@ public class CharacterActionScript : MonoBehaviour {
     public float minLength;
     public float rotationSpeed;
     public float lengthChangeSpeed;
+    public float minWidth;
+    public float maxWidth;
 
     private bool smithing;
 
@@ -69,13 +71,13 @@ public class CharacterActionScript : MonoBehaviour {
             float radDirection = (direction * Mathf.Deg2Rad) + (Mathf.PI / 2);
             length = Mathf.Clamp(length+inputs.getMovementDirection().y*lengthChangeSpeed, minLength, maxLength);
             bladeScript.setRotation(branch.transform.TransformDirection(new Vector2(-Mathf.Cos(radDirection), Mathf.Sin(radDirection))));
-            bladeScript.setScale(new Vector2(2.0f/length, length));
+            bladeScript.setScale(new Vector2(Mathf.Clamp(2.0f / length, minWidth, maxWidth), length));
             yield return null;
         }
         if (branch.IsAttached && branch.GetProjectedPosition(transform.position).magnitude <= branch.BranchLength) {
             direction *= Mathf.Deg2Rad;
             direction += Mathf.PI / 2;
-            root.CreateBranch(new EDGELORD.TreeBuilder.TreeBranchData(length, 2.0f / length, branch.transform.TransformDirection(new Vector2(-Mathf.Cos(direction), Mathf.Sin(direction))), branch, branch.transform.InverseTransformPoint(transform.position)));
+            root.CreateBranch(new EDGELORD.TreeBuilder.TreeBranchData(length, Mathf.Clamp(2.0f / length, minWidth, maxWidth), branch.transform.TransformDirection(new Vector2(-Mathf.Cos(direction), Mathf.Sin(direction))), branch, branch.transform.InverseTransformPoint(transform.position)));
             sfxPlayer.PlaySoundEffect("sword_thrust");
         }
         else {
