@@ -16,7 +16,7 @@ public class ScoreDisplay : MonoBehaviour {
     }
 
     public void UpdateScore(float newValue) {
-        textBox.text = scoreString + Convert.ToString(newValue);
+        textBox.text = string.Format("Score: {0:0.00}", newValue);
     }
 
     public void ResetScore () {
