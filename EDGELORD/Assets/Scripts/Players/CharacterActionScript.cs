@@ -19,6 +19,7 @@ public class CharacterActionScript : MonoBehaviour {
     EDGELORD.TreeBuilder.TreeRoot root;
     Transform ghostBlade;
     GhostBladeScript bladeScript;
+    SfxPlayer sfxPlayer;
 
     // Use this for initialization
     void Start() {
@@ -33,6 +34,7 @@ public class CharacterActionScript : MonoBehaviour {
         ghostBlade = transform.GetChild(0);
         ghostBlade.gameObject.SetActive(false);
         bladeScript = ghostBlade.GetComponent<GhostBladeScript>();
+        sfxPlayer = GetComponent<SfxPlayer>();
 	}
 	
 	// Update is called once per frame
@@ -42,6 +44,7 @@ public class CharacterActionScript : MonoBehaviour {
                 //Do Something
                 Collider2D collider = Physics2D.OverlapCircle(transform.position, overlapRadius);
                 if (collider != null) {
+                    sfxPlayer.PlaySoundEffect("sword_hit");
                     EDGELORD.TreeBuilder.TreeBranch branch = collider.transform.GetComponentInParent<EDGELORD.TreeBuilder.TreeBranch>();
                     if (branch.OwningPlayer == OwningPlayer) {
                         smithing = true;
@@ -71,6 +74,7 @@ public class CharacterActionScript : MonoBehaviour {
             direction *= Mathf.Deg2Rad;
             direction += Mathf.PI / 2;
             root.CreateBranch(new EDGELORD.TreeBuilder.TreeBranchData(length, 2.0f / length, branch.transform.TransformDirection(new Vector2(-Mathf.Cos(direction), Mathf.Sin(direction))), branch, branch.transform.InverseTransformPoint(transform.position)));
+            sfxPlayer.PlaySoundEffect("sword_thrust");
         }
         else {
             //branch was broken
