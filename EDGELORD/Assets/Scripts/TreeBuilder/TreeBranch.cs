@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Players;
 using UnityEngine;
@@ -32,6 +33,9 @@ namespace EDGELORD.TreeBuilder
 
         [Space]
         public float Area;
+
+        public Action OnSliceBranch = delegate { };
+
 
         private void Start()
         {
@@ -118,14 +122,17 @@ namespace EDGELORD.TreeBuilder
 
         public void OnSpriteSliced(SpriteSlicer2DSliceInfo info)
         {
-            Debug.Log("TEST SLICE CALLBACK");
+            List<SpriteSlicer2DSliceInfo> infoList = new List<SpriteSlicer2DSliceInfo>();
+            infoList.Add(info); 
+            HandleSliceReparenting(infoList);
+            OnSliceBranch();
         }
         public void SliceThisBranch(Vector3 worldStartPoint, Vector3 worldEndPoint)
         {
             List<SpriteSlicer2DSliceInfo> sliceInfoList = new List<SpriteSlicer2DSliceInfo>();
             SpriteSlicer2D.SliceSprite(worldStartPoint, worldEndPoint, branchSprite.gameObject, false, ref sliceInfoList);
             
-            HandleSliceReparenting(sliceInfoList);
+            //HandleSliceReparenting(sliceInfoList);
 
         }
 
@@ -197,7 +204,8 @@ namespace EDGELORD.TreeBuilder
                     child.gameObject.layer = 9; // "NoCollision" Layer.
                 }
             }
-            closestGameObject.GetComponent<Rigidbody2D>().isKinematic = true; 
+            closestGameObject.GetComponent<Rigidbody2D>().isKinematic = true;
+            branchSprite = closestGameObject.GetComponent<TreeBranch_Sprite>();
         }
 
 
