@@ -20,6 +20,7 @@ public class CharacterActionScript : MonoBehaviour {
     Transform ghostBlade;
     GhostBladeScript bladeScript;
     SfxPlayer sfxPlayer;
+    CameraShakeScript screenShake;
 
     // Use this for initialization
     void Start() {
@@ -35,6 +36,7 @@ public class CharacterActionScript : MonoBehaviour {
         ghostBlade.gameObject.SetActive(false);
         bladeScript = ghostBlade.GetComponent<GhostBladeScript>();
         sfxPlayer = GetComponent<SfxPlayer>();
+        screenShake = Camera.main.GetComponent<CameraShakeScript>();
 	}
 	
 	// Update is called once per frame
@@ -78,6 +80,7 @@ public class CharacterActionScript : MonoBehaviour {
         }
         else {
             //branch was broken
+            screenShake.screenShake(0.2f, 0.1f);
         }
         smithing = false;
         movement.movementEnabled = true;

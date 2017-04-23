@@ -22,5 +22,8 @@ public class CharacterMovementScript : MonoBehaviour {
             Vector2 direction = Vector2.ClampMagnitude(Vector2.MoveTowards(rigid.velocity, moveSpeed * inputs.getMovementDirection(), moveSpeed * acceleration * Time.deltaTime), moveSpeed);
             rigid.velocity = direction;
         }
+        else {
+            rigid.velocity = new Vector2();
+        }
 	}
 }
