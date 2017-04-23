@@ -41,6 +41,11 @@ namespace EDGELORD.TreeBuilder
             get { return this.transform.root == MyRoot.transform; }
         }
 
+        public float BranchLength
+        {
+            get { return BranchData.Length; }
+        }
+
         private void Start()
         {
             GetTreeRoot();
@@ -185,6 +190,7 @@ namespace EDGELORD.TreeBuilder
             var projectedEnterDist = Vector3.Project(this.transform.InverseTransformPoint(info.SliceEnterWorldPosition), Vector3.up);
             var projectedExitDist = Vector3.Project(this.transform.InverseTransformPoint(info.SliceExitWorldPosition), Vector3.up);
             float projectedCutOffDistance = Mathf.Min(projectedEnterDist.magnitude, projectedExitDist.magnitude);
+            this.BranchData.Length = projectedCutOffDistance;
             foreach (GameObject child in childObjects)
             {
                 if (child != closestGameObject)
@@ -275,6 +281,12 @@ namespace EDGELORD.TreeBuilder
             GameObject closestObjectToBase = d1 < d2 ? slicedParts[0] : slicedParts[1];
 
             return closestObjectToBase;
+        }
+
+        public Vector3 GetProjectedPosition(Vector3 worldPos)
+        {
+            var projVector = Vector3.Project(this.transform.InverseTransformPoint(worldPos), Vector3.up);
+            return this.transform.TransformPoint(projVector);
         }
 
     }
