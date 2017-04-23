@@ -192,8 +192,7 @@ namespace EDGELORD.TreeBuilder
             var projectedEnterDist = Vector3.Project(this.transform.InverseTransformPoint(info.SliceEnterWorldPosition), Vector3.up);
             var projectedExitDist = Vector3.Project(this.transform.InverseTransformPoint(info.SliceExitWorldPosition), Vector3.up);
             float projectedCutOffDistance = Mathf.Min(projectedEnterDist.magnitude, projectedExitDist.magnitude);
-            this.BranchData.Length = projectedCutOffDistance;
-            OnSliceBranch(this.transform.TransformPoint(Vector3.up*projectedCutOffDistance));
+            
             foreach (GameObject child in childObjects)
             {
                 if (child != closestGameObject)
@@ -222,6 +221,9 @@ namespace EDGELORD.TreeBuilder
             if (info.SlicedObject) info.SlicedObject.transform.parent = null;
             closestGameObject.GetComponent<Rigidbody2D>().isKinematic = true;
             branchSprite = closestGameObject.GetComponent<TreeBranch_Sprite>();
+
+            this.BranchData.Length = projectedCutOffDistance;
+            OnSliceBranch(this.transform.TransformPoint(Vector3.up * projectedCutOffDistance));
         }
 
 
