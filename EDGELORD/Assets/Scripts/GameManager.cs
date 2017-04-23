@@ -57,8 +57,6 @@ namespace EDGELORD.Manager {
 
             InitObjects();
 
-            musicPlayer.StartMusic();
-
             var roots = FindObjectsOfType<TreeRoot>();
             if(roots.Length >= 2)
             {
@@ -91,6 +89,10 @@ namespace EDGELORD.Manager {
 
             // TODO: temporary
             playersReady = true;
+
+            if (!DEBUG_Disable_Music) {
+                musicPlayer.StartMusic();
+            }
         }
 
         void Update () {
