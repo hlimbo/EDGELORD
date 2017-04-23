@@ -17,8 +17,10 @@ namespace EDGELORD.TreeBuilder
     {
         public PlayerID OwningPlayer;
         public List<TreeBranch> DirectChildBranches = new List<TreeBranch>();
+        //public 
         [Space]
-        public GameObject SpriteObject; // The visual 
+        public GameObject SpriteHolder; 
+        public TreeBranch_Sprite branchSprite;
         public TreeBranchData BranchData;
 
         public TreeRoot MyRoot;
@@ -50,6 +52,13 @@ namespace EDGELORD.TreeBuilder
             }
         }
 
+        public TreeBranch CreateChildBranch(TreeBranchData data, GameObject branchPrefab)
+        {
+            var go = GameObject.Instantiate(branchPrefab, data.LocalBasePoint, Quaternion.identity);
+            var branch = go.GetComponent<TreeBranch>();
+
+            return branch;
+        }
         // Call this when the Branch is created.
         public void Generate(TreeBranchData data, bool doCoroutine = true)
         {
@@ -62,11 +71,11 @@ namespace EDGELORD.TreeBuilder
             var targetScale = GetNewProportions(data.Length, data.Width);
             if (doCoroutine)
             {
-                StartCoroutine(CoLerpGenerate(this.SpriteObject.transform, targetScale));
+                StartCoroutine(CoLerpGenerate(this.SpriteHolder.transform, targetScale));
             }
             else
             {
-                this.SpriteObject.transform.localScale = targetScale;
+                this.SpriteHolder.transform.localScale = targetScale;
             }
         }
 
@@ -84,31 +93,78 @@ namespace EDGELORD.TreeBuilder
             List<SpriteSlicer2DSliceInfo> sliceInfoList = new List<SpriteSlicer2DSliceInfo>();
             SpriteSlicer2D.SliceSprite(worldStartPoint, worldEndPoint, cutGameObject, false, ref sliceInfoList);
             
-            HandleSliceReparenting(sliceInfoList.ToArray());
+            HandleSliceReparenting(sliceInfoList);
 
         }
 
-        private void HandleSliceReparenting(SpriteSlicer2DSliceInfo[] sliceInfo)
+        public void HandleSliceReparenting(List<SpriteSlicer2DSliceInfo> sliceInfo)
         {
-            SpriteSlicer2DSliceInfo info = sliceInfo[0];
-            GameObject closestGameObject = info.ChildObjects[0];
-            float closestDist = Vector3.Distance(info.SlicedObject.transform.position, info.ChildObjects[0].GetComponent<SlicedSprite>().SpriteBounds.center);
-            foreach (GameObject child in info.ChildObjects)
+            branchSprite.HandleSlice(sliceInfo);
+
+            //SpriteSlicer2DSliceInfo info = GetMostRecentSlicedObject(sliceInfo);
+            //GameObject closestChild = GetSlicedObjectClosestToBase(info, this.gameObject);
+
+            //foreach (Transform child in transform)
+            //{
+            //    var ss = child.GetComponent<SlicedSprite>();
+            //    if (ss)
+            //    {
+
+            //    }
+            //}
+
+
+
+            //SpriteSlicer2DSliceInfo info = sliceInfo[0];
+            List<GameObject> childObjects = new List<GameObject>();
+            foreach (Transform child in SpriteHolder.transform)
             {
-                var newDist = Vector3.Distance(info.SlicedObject.transform.position, child.GetComponent<SlicedSprite>().SpriteBounds.center);
-                if (newDist > closestDist)
+                if (child.GetComponent<SlicedSprite>())
+                {
+                    childObjects.Add(child.gameObject);
+                    var rb = child.GetComponent<Rigidbody2D>();
+                    if (rb) rb.isKinematic = true;
+                    TreeBranch_Sprite sp = child.GetComponent<TreeBranch_Sprite>();
+                    if (!sp)
+                    {
+                        sp = child.gameObject.AddComponent<TreeBranch_Sprite>();
+                        sp.OwnerTreeBranch = this;
+                    }
+                }
+            }
+            Debug.Log(childObjects.Count);
+            GameObject closestGameObject = childObjects[0];
+            float closestDist = Vector3.Distance(transform.position, closestGameObject.GetComponent<SlicedSprite>().MeshRenderer.bounds.center);
+            foreach (GameObject child in childObjects)
+            {
+                var newDist = Vector3.Distance(transform.position, child.GetComponent<SlicedSprite>().MeshRenderer.bounds.center);
+                if (newDist < closestDist)
                 {
                     closestDist = newDist;
                     closestGameObject = child;
                 }
             }
-            foreach (GameObject child in info.ChildObjects)
+            foreach (GameObject child in childObjects)
             {
                 if (child != closestGameObject)
                 {
                     child.GetComponent<Rigidbody2D>().isKinematic = false;
+                    //var projectedDistanceFromRoot = 
                 }
             }
+            closestGameObject.GetComponent<Rigidbody2D>().isKinematic = true;
+
+            //foreach (GameObject go in info.ChildObjects)
+            //{
+            //    var rb = go.GetComponent<Rigidbody2D>();
+            //    if (rb) rb.isKinematic = false;
+            //}
+            //if (closestChild != null)
+            //{
+            //    Debug.Log(closestChild.name);
+            //    closestChild.GetComponent<Rigidbody2D>().isKinematic = true;
+            //}
+
             //GameObject[] slicedPieces = 
             //float sliceDistanceFromRoot = 
             //Todo: Rechild children to each appropriate part.
@@ -116,7 +172,7 @@ namespace EDGELORD.TreeBuilder
             //Todo: Find sliced piece to remain attached, and replace the old one it with the new one.
 
             //ToDo: Add Rigidbody to unattached piece, and destroy it after a period of time. 
-            }
+        }
 
 
         private IEnumerator CoLerpGenerate(Transform targetTransform, Vector3 targetScale, float lerpTime = 0.1f)
@@ -137,6 +193,45 @@ namespace EDGELORD.TreeBuilder
             }
             targetTransform.localScale = targetScale;
             
+        }
+
+
+        //TODO: Create a helper function that obtains the most recently sliced game object.
+        public SpriteSlicer2DSliceInfo GetMostRecentSlicedObject(List<SpriteSlicer2DSliceInfo> slicedObjectInfo)
+        {
+            if (slicedObjectInfo == null)
+            {
+                Debug.Log("GetMostRecentSlicedObject slicedObjectInfo is null");
+                return null;
+            }
+
+            if (slicedObjectInfo.Count == 1)
+            {
+                return slicedObjectInfo[0];
+            }
+
+            //GET THE last object in the array is the most recently sliced.
+            int recentlySlicedIndex = slicedObjectInfo.Count - 1;
+            return slicedObjectInfo[recentlySlicedIndex];
+        }
+        public GameObject GetSlicedObjectClosestToBase(SpriteSlicer2DSliceInfo branch, GameObject baseObject)
+        {
+            if (branch == null)
+                return null;
+
+            //Note: there should be only 2 sliced parts in the list
+            List<GameObject> slicedParts = branch.ChildObjects;
+
+            //gets the worldspace coordinates for the centerpoint of the sliced sprite.
+            Vector3 slicedPartCenter1 = slicedParts[0].GetComponent<SlicedSprite>().MeshRenderer.bounds.center;
+            Vector3 slicedPartCenter2 = slicedParts[1].GetComponent<SlicedSprite>().MeshRenderer.bounds.center;
+
+            float d1 = Vector3.Distance(baseObject.transform.position, slicedPartCenter1);
+            float d2 = Vector3.Distance(baseObject.transform.position, slicedPartCenter2);
+
+            GameObject closestObjectToBase = d1 < d2 ? slicedParts[0] : slicedParts[1];
+
+            return closestObjectToBase;
         }
 
     }

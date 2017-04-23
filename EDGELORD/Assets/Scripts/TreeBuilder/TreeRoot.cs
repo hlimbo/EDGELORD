@@ -25,6 +25,7 @@ namespace EDGELORD.TreeBuilder
             TreeBranch branch = go.GetComponent<TreeBranch>();
             branch.Generate(data);
 
+
             BranchList.Add(branch);
         }
     }
