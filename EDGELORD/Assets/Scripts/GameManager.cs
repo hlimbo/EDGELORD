@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using EDGELORD.TreeBuilder;
+using Players;
 using UnityEngine;
 using TMPro;
 
@@ -28,6 +30,9 @@ namespace EDGELORD.Manager {
 
         protected GameManager () {}
 
+        public TreeRoot Player1TreeRoot;
+        public TreeRoot Player2TreeRoot;
+
         void Start () {
             gameInProgress = false;
             musicPlayer = (MusicPlayer)FindObjectOfType<MusicPlayer>();
@@ -40,7 +45,7 @@ namespace EDGELORD.Manager {
             player2ScoreDisplay = (ScoreDisplay)playerScoreDisplays[1];
 
             timerCoroutine = startTimer();
-            TEST_scoreUpdateCoroutine = TEST_updateScore();
+            //TEST_scoreUpdateCoroutine = TEST_updateScore();
 
             startingPlayerPositions = new Vector3[] { players[0].transform.position, players[1].transform.position };
 
@@ -48,6 +53,36 @@ namespace EDGELORD.Manager {
 
             if (!DEBUG_Disable_Music) {
                 musicPlayer.StartMusic();
+            }
+
+            var roots = FindObjectsOfType<TreeRoot>();
+            if(roots.Length >= 2)
+            {
+                if (roots[0].OwningPlayer == PlayerID.Player_1)
+                {
+                    Player1TreeRoot = roots[0];
+                    Player2TreeRoot = roots[1];
+                }
+                else
+                {
+                    Player1TreeRoot = roots[1];
+                    Player2TreeRoot = roots[0];
+                }
+                if (Player1TreeRoot)
+                {
+                    Player1TreeRoot.OnUpdateArea += area =>
+                    {
+                        player1ScoreDisplay.UpdateScore(area);
+                    };
+                }
+                if (Player2TreeRoot)
+                {
+                    Player2TreeRoot.OnUpdateArea += area =>
+                    {
+                        player2ScoreDisplay.UpdateScore(area);
+                    };
+                }
+                
             }
 
         }
@@ -111,8 +146,17 @@ namespace EDGELORD.Manager {
 
         public void UpdateScores () {
             // TODO: calculate scores for each player here
-            player1ScoreDisplay.UpdateScore(Random.value);
-            player2ScoreDisplay.UpdateScore(Random.value);
+            //if (Player1TreeRoot)
+            //{
+            //    player1ScoreDisplay.UpdateScore(Player1TreeRoot.TotalArea);
+            //}
+            //if (Player2TreeRoot)
+            //{
+            //    player2ScoreDisplay.UpdateScore(Player2TreeRoot.TotalArea);
+            //}
+
+            //player1ScoreDisplay.UpdateScore(Random.value);
+            //player2ScoreDisplay.UpdateScore(Random.value);
         }
 
         private IEnumerator startTimer() {
