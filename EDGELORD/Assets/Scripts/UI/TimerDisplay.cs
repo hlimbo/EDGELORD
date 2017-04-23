@@ -14,4 +14,8 @@ public class TimerDisplay : MonoBehaviour {
         float secs = (timeLeftInSeconds % 60);
         textBox.text = string.Format("{0}:{1,00:00.0}", mins, secs);
     }
+
+    public void ResetTime() {
+        textBox.text = "0:00.0";
+    }
 }

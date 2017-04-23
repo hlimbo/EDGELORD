@@ -13,6 +13,9 @@ namespace EDGELORD.Manager {
         private bool gameInProgress;
         private float timeLeft;
 
+        private IEnumerator timerCoroutine;
+        private IEnumerator TEST_scoreUpdateCoroutine;
+
         public MusicPlayer musicPlayer;
         //private SfxPlayer sfxPlayer;
         public Canvas ui;
@@ -34,15 +37,23 @@ namespace EDGELORD.Manager {
             player1ScoreDisplay = (ScoreDisplay)playerScoreDisplays[0];
             player2ScoreDisplay = (ScoreDisplay)playerScoreDisplays[1];
 
+            timerCoroutine = startTimer();
+            TEST_scoreUpdateCoroutine = TEST_updateScore();
+
             InitObjects();
+
+            if (!DEBUG_Disable_Music) {
+                musicPlayer.StartMusic();
+            }
+
         }
 
         void Update () {
-            if (gameInProgress) {
+            if (!gameInProgress) {
+                StartGame();
+                gameInProgress = true;
                 return;
             }           
-            StartGame();
-            gameInProgress = true;
         }
 
         void InitObjects () {
@@ -51,19 +62,23 @@ namespace EDGELORD.Manager {
 
             player1ScoreDisplay.ResetScore();
             player2ScoreDisplay.ResetScore();
+
+            foreach (var player in players) {
+                // disable player input
+            }
         }
 
         void StartGame () {
-            if (!DEBUG_Disable_Music) {
-                musicPlayer.StartMusic();
+            foreach (var player in players) {
+                // enable player input
             }
-
-            StartCoroutine(startTimer());
-            StartCoroutine(TEST_updateScore());
+            StartCoroutine(timerCoroutine);
+            StartCoroutine(TEST_scoreUpdateCoroutine);
         }
 
         void StopGame () {
-
+            StopCoroutine(timerCoroutine);
+            timerDisplay.ResetTime();
             gameInProgress = false;
         }
 
@@ -74,13 +89,13 @@ namespace EDGELORD.Manager {
         }
 
         private IEnumerator startTimer() {
+            timerDisplay.ResetTime();
             while (timeLeft > 0) {
                 timeLeft -= Time.deltaTime;
                 timerDisplay.UpdateTime(timeLeft);
                 yield return null;
             }
             timerDisplay.UpdateTime(0);
-            StopGame();
         }
 
         private IEnumerator TEST_updateScore() {
