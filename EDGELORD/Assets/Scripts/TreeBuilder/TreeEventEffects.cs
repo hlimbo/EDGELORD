@@ -17,7 +17,7 @@ namespace EDGELORD.TreeBuilder
             sfxSource = gameObject.AddComponent<AudioSource>() as AudioSource;
         }
 
-        private void OnBranchCutEffects()
+        private void OnBranchCutEffects(Vector3 worldPos)
         {
             //ToDo: Branch Cutting Events.
             sfxSource.PlayOneShot(sound);
