@@ -16,7 +16,7 @@ public class HammerScript : MonoBehaviour {
         hammer.transform.eulerAngles = new Vector3(0.0f, 0.0f, minAngle);
 
         float lerpValue = Mathf.LerpAngle(minAngle, maxAngle, Time.deltaTime * speedPercent);
-        hammer.transform.Rotate(Vector3.forward, maxAngle);
+
     }
 
 	void Update ()
