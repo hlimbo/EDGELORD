@@ -8,6 +8,7 @@ namespace EDGELORD.TreeBuilder
 
         private void Start()
         {
+            _treeRoot = GetComponent<TreeRoot>();
             _treeRoot.OnBranchCutAction += OnBranchCutEffects;
         }
 

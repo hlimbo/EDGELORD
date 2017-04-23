@@ -15,6 +15,8 @@ namespace EDGELORD.TreeBuilder
 
         public Action OnBranchCutAction = delegate { };
 
+        public float TotalArea;
+
         public void Awake()
         {
             CurrentHoverBranch = StartBranch;
