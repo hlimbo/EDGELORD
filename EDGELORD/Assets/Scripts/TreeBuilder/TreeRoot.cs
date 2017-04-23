@@ -15,12 +15,14 @@ namespace EDGELORD.TreeBuilder
 
         public Action OnBranchCutAction = delegate { };
 
-        public float TotalArea;
+        public float TotalArea { get; private set; }
+
 
         public void Awake()
         {
             CurrentHoverBranch = StartBranch;
             BranchList.Add(StartBranch);
+            UpdateTotalArea();
         }
         public void CreateBranch(TreeBranchData data)
         {
@@ -31,6 +33,15 @@ namespace EDGELORD.TreeBuilder
 
             data.ParentBranch.AddChildBranch(branch);
             BranchList.Add(branch);
+            UpdateTotalArea();
+        }
+
+        public void UpdateTotalArea()
+        {
+            foreach (TreeBranch branch in BranchList)
+            {
+                
+            }
         }
     }
 }
