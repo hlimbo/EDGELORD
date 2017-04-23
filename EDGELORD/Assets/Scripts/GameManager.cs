@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq; // for All()
 using EDGELORD.TreeBuilder;
 using Players;
 using UnityEngine;
@@ -7,6 +8,8 @@ using TMPro;
 
 namespace EDGELORD.Manager {
     public class GameManager : Singleton<GameManager> {
+
+        public bool gameRunning { get { return gameInProgress; } }
 
         private ScoreDisplay player1ScoreDisplay;
         private ScoreDisplay player2ScoreDisplay;
@@ -30,6 +33,7 @@ namespace EDGELORD.Manager {
         public GameObject[] players;
 
         public int gameLengthInSeconds = 60;
+        public int countdownLengthInSeconds = 3;
         public bool DEBUG_Disable_Music = false;
 
         protected GameManager () {}
@@ -87,16 +91,13 @@ namespace EDGELORD.Manager {
                 
             }
 
-            // TODO: temporary
-            playersReady = true;
-
-            if (!DEBUG_Disable_Music) {
-                musicPlayer.StartMusic();
-            }
         }
 
         void Update () {
             // wait until both players have readied
+            if (!playersReady) {
+                playersReady = players.All(player => player.GetComponent<CharacterActionScript>().isReady);
+            }
 
             // start the game
             if (!gameInProgress && playersReady) {
@@ -108,6 +109,7 @@ namespace EDGELORD.Manager {
             if (timeLeft <= 0 && gameInProgress) {
                 StopGame();
                 showWinner();
+                gameInProgress = false;
                 playersReady = false;
 
                 // if (true) { // TODO: get player input to restart the game here
@@ -124,35 +126,39 @@ namespace EDGELORD.Manager {
             player1ScoreDisplay.ResetScore();
             player2ScoreDisplay.ResetScore();
 
-            for (int i = 0; i < players.Length; ++i) {
-                // disable player input and reset position
-                players[i].GetComponent<PlayerInputManager>().inputsEnabled = false;
-                players[i].transform.position = startingPlayerPositions[i];
-            }
+            // disablePlayerMovement(true);
         }
 
         void StartGame () {
-            foreach (var player in players) {
-                // enable player input
-                player.GetComponent<PlayerInputManager>().inputsEnabled = true;
+            if (!DEBUG_Disable_Music) {
+                musicPlayer.StartMusic();
             }
+            enablePlayerInput();
+            StartCoroutine(startGameWithCountdown());
+        }
+
+        private IEnumerator startGameWithCountdown () {
+            int downCounter = countdownLengthInSeconds;
+            while (downCounter > 0) {
+                Debug.Log(System.Convert.ToString(downCounter)); // TODO: show message onscreen here
+                --downCounter;
+                yield return new WaitForSeconds(1);
+            }
+            // TODO: hide message here
             StartCoroutine(timerCoroutine);
         }
 
         void StopGame () {
             StopCoroutine(timerCoroutine);
             timerDisplay.ResetTime();
-            gameInProgress = false;
 
             Debug.Log("game stopped");
+            musicPlayer.FadeOutAndStop();
 
-            foreach (var player in players) {
-                // disable player input
-                player.GetComponent<PlayerInputManager>().inputsEnabled = false;
-            }
+            disablePlayerInput();
         }
 
-        void ResetGame () {
+        public void ResetGame () {
             InitObjects();
         }
 
@@ -192,6 +198,27 @@ namespace EDGELORD.Manager {
                 yield return null;
             }
             timerDisplay.UpdateTime(0);
+        }
+
+        private void enablePlayerInput() {
+            foreach (var player in players) {
+                player.GetComponent<CharacterMovementScript>().movementEnabled = true;
+            }
+        }
+
+        private void disablePlayerMovement(bool resetPosition = false) {
+            for (int i = 0; i < players.Length; ++i) {
+                players[i].GetComponent<CharacterMovementScript>().movementEnabled = false;
+                if (resetPosition) {
+                    players[i].transform.position = startingPlayerPositions[i];
+                }
+            }
+        }
+
+        private void disablePlayerInput() {
+            for (int i = 0; i < players.Length; ++i) {
+                players[i].GetComponent<PlayerInputManager>().inputsEnabled = false;
+            }
         }
     }
 }

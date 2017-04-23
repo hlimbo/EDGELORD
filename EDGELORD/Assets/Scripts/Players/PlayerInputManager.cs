@@ -42,4 +42,8 @@ public class PlayerInputManager : MonoBehaviour {
     public bool getAction() {
         return Input.GetKey(action) && inputsEnabled;
     }
+
+    public bool getActionUp() {
+        return Input.GetKeyUp(action) && inputsEnabled;
+    }
 }
