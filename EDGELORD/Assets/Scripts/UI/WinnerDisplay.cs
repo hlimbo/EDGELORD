@@ -2,19 +2,19 @@ using UnityEngine;
 
 public class WinnerDisplay : MonoBehaviour {
 
-    void Start () {
+    void Awake () {
         // textBox = GetComponent<TMP_Text>();
         // hide display
-        gameObject.setActive(false);
+        gameObject.SetActive(false);
     }
 
-    void ShowMessage (string text) {
+    public void ShowMessage (string text) {
         // textBox.text = text;
 
-        gameObject.setActive(true);
+        gameObject.SetActive(true);
     }
 
-    void Hide () {
-        gameObject.setActive(false);
+    public void Hide () {
+        gameObject.SetActive(false);
     }
 }
