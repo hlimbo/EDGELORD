@@ -49,7 +49,8 @@ public class HammerScript : MonoBehaviour
     {
         if(inputs.getActionDown())
         {
-            animator.SetBool("canSwingHammer", true);
+            //animator.SetBool("canSwingHammer", true);
+            animator.SetTrigger("SwingHammer");
         }
     }
 
@@ -74,6 +75,5 @@ public class HammerScript : MonoBehaviour
             }
         }
     }
-
 
 }
