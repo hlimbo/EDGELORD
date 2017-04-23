@@ -30,6 +30,7 @@ namespace EDGELORD.Manager {
         public GameObject[] players;
 
         public int gameLengthInSeconds = 60;
+        public int countdownLengthInSeconds = 3;
         public bool DEBUG_Disable_Music = false;
 
         protected GameManager () {}
@@ -124,18 +125,22 @@ namespace EDGELORD.Manager {
             player1ScoreDisplay.ResetScore();
             player2ScoreDisplay.ResetScore();
 
-            for (int i = 0; i < players.Length; ++i) {
-                // disable player input and reset position
-                players[i].GetComponent<PlayerInputManager>().inputsEnabled = false;
-                players[i].transform.position = startingPlayerPositions[i];
-            }
+            disablePlayerInput(true);
         }
 
         void StartGame () {
-            foreach (var player in players) {
-                // enable player input
-                player.GetComponent<PlayerInputManager>().inputsEnabled = true;
+            enablePlayerInput();
+            StartCoroutine(startGameWithCountdown());
+        }
+
+        private IEnumerator startGameWithCountdown () {
+            int downCounter = countdownLengthInSeconds;
+            while (downCounter > 0) {
+                Debug.Log(System.Convert.ToString(downCounter)); // TODO: show message onscreen here
+                --downCounter;
+                yield return new WaitForSeconds(1);
             }
+            // TODO: hide message here
             StartCoroutine(timerCoroutine);
         }
 
@@ -146,10 +151,7 @@ namespace EDGELORD.Manager {
 
             Debug.Log("game stopped");
 
-            foreach (var player in players) {
-                // disable player input
-                player.GetComponent<PlayerInputManager>().inputsEnabled = false;
-            }
+            disablePlayerInput();
         }
 
         void ResetGame () {
@@ -192,6 +194,21 @@ namespace EDGELORD.Manager {
                 yield return null;
             }
             timerDisplay.UpdateTime(0);
+        }
+
+        private void enablePlayerInput() {
+            foreach (var player in players) {
+                player.GetComponent<PlayerInputManager>().inputsEnabled = true;
+            }
+        }
+
+        private void disablePlayerInput(bool resetPosition = false) {
+            for (int i = 0; i < players.Length; ++i) {
+                players[i].GetComponent<PlayerInputManager>().inputsEnabled = false;
+                if (resetPosition) {
+                    players[i].transform.position = startingPlayerPositions[i];
+                }
+            }
         }
     }
 }
