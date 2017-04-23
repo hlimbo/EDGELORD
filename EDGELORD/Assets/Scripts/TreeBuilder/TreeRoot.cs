@@ -20,11 +20,11 @@ namespace EDGELORD.TreeBuilder
         public void CreateBranch(TreeBranchData data)
         {
             //ToDo: CreateBranch From Data
-            //data.ParentBranch.CreateChildBranch(data);
             var go = GameObject.Instantiate(BranchPrefab, data.LocalBasePoint, Quaternion.identity);
             TreeBranch branch = go.GetComponent<TreeBranch>();
             branch.Generate(data);
 
+            data.ParentBranch.AddChildBranch(branch);
             BranchList.Add(branch);
         }
     }

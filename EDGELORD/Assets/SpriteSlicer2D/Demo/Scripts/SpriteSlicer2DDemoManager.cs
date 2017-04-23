@@ -2,6 +2,7 @@
 using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
+using EDGELORD.TreeBuilder;
 
 public class SpriteSlicer2DDemoManager : MonoBehaviour 
 {
@@ -100,7 +101,9 @@ public class SpriteSlicer2DDemoManager : MonoBehaviour
 						// sliced but remaining stationary
 						for(int spriteIndex = 0; spriteIndex < m_SlicedSpriteInfo.Count; spriteIndex++)
 						{
-							for(int childSprite = 0; childSprite < m_SlicedSpriteInfo[spriteIndex].ChildObjects.Count; childSprite++)
+                            var sp = m_SlicedSpriteInfo[spriteIndex].SlicedObject.GetComponent<TreeBranch_Sprite>();
+                            if(sp) sp.OwnerTreeBranch.HandleSliceReparenting(m_SlicedSpriteInfo);
+                            for (int childSprite = 0; childSprite < m_SlicedSpriteInfo[spriteIndex].ChildObjects.Count; childSprite++)
 							{
 								Vector2 sliceDirection = m_MousePositions[m_MousePositions.Count - 1].m_WorldPosition - m_MousePositions[loop].m_WorldPosition;
 								sliceDirection.Normalize();
