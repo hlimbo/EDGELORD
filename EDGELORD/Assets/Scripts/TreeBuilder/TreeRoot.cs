@@ -13,7 +13,7 @@ namespace EDGELORD.TreeBuilder
         public TreeBranch StartBranch;
         public TreeBranch CurrentHoverBranch;
 
-        public Action OnBranchCutAction = delegate { };
+        public Action<Vector3> OnBranchCutAction = delegate { };
 
         public float TotalArea { get; private set; }
 

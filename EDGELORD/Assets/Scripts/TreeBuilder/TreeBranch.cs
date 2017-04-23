@@ -34,7 +34,7 @@ namespace EDGELORD.TreeBuilder
         [Space]
         public float Area;
 
-        public Action OnSliceBranch = delegate { };
+        public Action<Vector3> OnSliceBranch = delegate { };
 
         public bool IsAttached
         {
@@ -50,7 +50,7 @@ namespace EDGELORD.TreeBuilder
         {
             GetTreeRoot();
             OnSliceBranch += MyRoot.OnBranchCutAction;
-            OnSliceBranch += () =>
+            OnSliceBranch += (v) =>
             {
                 Debug.Log("Branch Cut!");
             };
@@ -139,7 +139,8 @@ namespace EDGELORD.TreeBuilder
             List<SpriteSlicer2DSliceInfo> infoList = new List<SpriteSlicer2DSliceInfo>();
             infoList.Add(info); 
             HandleSliceReparenting(infoList);
-            OnSliceBranch();
+
+            //OnSliceBranch();
         }
         public void SliceThisBranch(Vector3 worldStartPoint, Vector3 worldEndPoint)
         {
@@ -191,6 +192,7 @@ namespace EDGELORD.TreeBuilder
             var projectedExitDist = Vector3.Project(this.transform.InverseTransformPoint(info.SliceExitWorldPosition), Vector3.up);
             float projectedCutOffDistance = Mathf.Min(projectedEnterDist.magnitude, projectedExitDist.magnitude);
             this.BranchData.Length = projectedCutOffDistance;
+            OnSliceBranch(this.transform.TransformPoint(Vector3.up*projectedCutOffDistance));
             foreach (GameObject child in childObjects)
             {
                 if (child != closestGameObject)

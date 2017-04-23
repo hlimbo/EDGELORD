@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerInputManager : MonoBehaviour {
 
+    public bool inputsEnabled = true;
+
     public KeyCode up;
     public KeyCode down;
     public KeyCode left;
@@ -11,28 +13,33 @@ public class PlayerInputManager : MonoBehaviour {
     public KeyCode action;
 	
     public Vector2 getMovementDirection() {
-        int vertical = 0;
-        int horizontal = 0;
-        if (Input.GetKey(up)) {
-            vertical += 1;
+        if (inputsEnabled) {
+            int vertical = 0;
+            int horizontal = 0;
+            if (Input.GetKey(up)) {
+                vertical += 1;
+            }
+            if (Input.GetKey(down)) {
+                vertical -= 1;
+            }
+            if (Input.GetKey(right)) {
+                horizontal += 1;
+            }
+            if (Input.GetKey(left)) {
+                horizontal -= 1;
+            }
+            return new Vector2(horizontal, vertical);
         }
-        if (Input.GetKey(down)){
-            vertical -= 1;
+        else {
+            return new Vector2();
         }
-        if (Input.GetKey(right)) {
-            horizontal += 1;
-        }
-        if (Input.GetKey(left)) {
-            horizontal -= 1;
-        }
-        return new Vector2(horizontal, vertical);
     }
 
     public bool getActionDown() {
-        return Input.GetKeyDown(action);
+        return Input.GetKeyDown(action) && inputsEnabled;
     }
 
     public bool getAction() {
-        return Input.GetKey(action);
+        return Input.GetKey(action) && inputsEnabled;
     }
 }

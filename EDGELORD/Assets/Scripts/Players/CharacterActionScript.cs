@@ -19,6 +19,8 @@ public class CharacterActionScript : MonoBehaviour {
     EDGELORD.TreeBuilder.TreeRoot root;
     Transform ghostBlade;
     GhostBladeScript bladeScript;
+    SfxPlayer sfxPlayer;
+    CameraShakeScript screenShake;
 
     // Use this for initialization
     void Start() {
@@ -33,6 +35,8 @@ public class CharacterActionScript : MonoBehaviour {
         ghostBlade = transform.GetChild(0);
         ghostBlade.gameObject.SetActive(false);
         bladeScript = ghostBlade.GetComponent<GhostBladeScript>();
+        sfxPlayer = GetComponent<SfxPlayer>();
+        screenShake = Camera.main.GetComponent<CameraShakeScript>();
 	}
 	
 	// Update is called once per frame
@@ -40,8 +44,9 @@ public class CharacterActionScript : MonoBehaviour {
         if (smithing == false) {
             if (inputs.getActionDown()) {
                 //Do Something
-                Collider2D collider = Physics2D.OverlapCircle(transform.position, overlapRadius);
+                Collider2D collider = Physics2D.OverlapCircle(transform.position, overlapRadius, LayerMask.GetMask("Default"));
                 if (collider != null) {
+                    sfxPlayer.PlaySoundEffect("sword_hit");
                     EDGELORD.TreeBuilder.TreeBranch branch = collider.transform.GetComponentInParent<EDGELORD.TreeBuilder.TreeBranch>();
                     if (branch.OwningPlayer == OwningPlayer) {
                         smithing = true;
@@ -71,9 +76,11 @@ public class CharacterActionScript : MonoBehaviour {
             direction *= Mathf.Deg2Rad;
             direction += Mathf.PI / 2;
             root.CreateBranch(new EDGELORD.TreeBuilder.TreeBranchData(length, 2.0f / length, branch.transform.TransformDirection(new Vector2(-Mathf.Cos(direction), Mathf.Sin(direction))), branch, branch.transform.InverseTransformPoint(transform.position)));
+            sfxPlayer.PlaySoundEffect("sword_thrust");
         }
         else {
             //branch was broken
+            screenShake.screenShake(0.2f, 0.1f);
         }
         smithing = false;
         movement.movementEnabled = true;
