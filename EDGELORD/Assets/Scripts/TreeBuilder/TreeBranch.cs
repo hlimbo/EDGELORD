@@ -36,11 +36,19 @@ namespace EDGELORD.TreeBuilder
 
         public Action OnSliceBranch = delegate { };
 
+        public bool IsAttached
+        {
+            get { return this.transform.root == MyRoot.transform; }
+        }
 
         private void Start()
         {
             GetTreeRoot();
             OnSliceBranch += MyRoot.OnBranchCutAction;
+            OnSliceBranch += () =>
+            {
+                Debug.Log("Branch Cut!");
+            };
         }
 
         private void GetTreeRoot()
@@ -273,41 +281,3 @@ namespace EDGELORD.TreeBuilder
 
     }
 }
-/*
- * 
- * 
- *      SpriteSlicer2D.SliceAllSprites(startPoint, endPoint, canDestroyParent, ref slicedObjectInfo, slicableMask);
-
-            //Case 2 reparent branches to proper slices if main part of the sword is cut in half
-            //DONE: Reparent the children branches attached to the base of the sliced object.
-            SpriteSlicer2DSliceInfo info = GetMostRecentSlicedObject(slicedObjectInfo);
-            GameObject slicedObject = info.SlicedObject;
-            List<GameObject> slicedPieces = info.ChildObjects;
-
-            //obtain all the branches from the slicedObject.
-            List<GameObject> branches = new List<GameObject>();
-            for (int i = 0; i < slicedObject.transform.childCount; ++i)
-                branches.Add(slicedObject.transform.GetChild(i).gameObject);
-
-            //detach branches from deactivated parent object
-            slicedObject.transform.DetachChildren();
-
-            foreach(GameObject branch in branches)
-            {
-                //obtain which branch is closer of the 2 slicedPiece objects
-                float d1 = Vector3.Distance(slicedPieces[0].GetComponent<SlicedSprite>().MeshRenderer.bounds.center, branch.transform.position);
-                float d2 = Vector3.Distance(slicedPieces[1].GetComponent<SlicedSprite>().MeshRenderer.bounds.center, branch.transform.position);
-
-                //float d1 = Vector3.Distance(branch.transform.position, slicedPieces[0].GetComponent<SlicedSprite>().MeshRenderer.bounds.center);
-                //float d2 = Vector3.Distance(branch.transform.position, slicedPieces[1].GetComponent<SlicedSprite>().MeshRenderer.bounds.center);
-
-                //if slicedPieces[0] is further away from slicedPieces[1] -> attach branch to slicedPieces[1]
-                if (d1 > d2)
-                    branch.transform.SetParent(slicedPieces[1].transform, true);
-                else
-                    branch.transform.SetParent(slicedPieces[0].transform, true);
-            }
-
- * 
- * 
- * */
