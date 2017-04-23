@@ -96,13 +96,15 @@ namespace EDGELORD.TreeBuilder
 	            if (b)
 	            {
 	                currentTargetBranch = b.OwnerTreeBranch;
-	                Root.CurrentHoverBranch = b.OwnerTreeBranch;
+	                //Root.CurrentHoverBranch = b.OwnerTreeBranch;
 	            }
 	        }
 	        else
-	        {
+            {
+                currentTargetBranch = null;
                 Debug.Log("No Hit.");
-            }
+	            return false;
+	        }
             return true;
 	    }
 
