@@ -10,8 +10,12 @@ namespace EDGELORD.TreeBuilder
         public Transform treeStart;
         public KeyCode testKey;
         public PolygonCollider2D myCollider;
-
         public float currentArea;
+        [Space]
+        public Color TeritoryColor;
+        public MeshFilter myMeshFilter;
+        public MeshRenderer myMeshRenderer;
+        public int orderInLayer = -1;
 
         private void Start()
         {
@@ -53,7 +57,82 @@ namespace EDGELORD.TreeBuilder
             currentArea = area;
             treeRoot.SetTotalArea(area);
             //Debug.Log(area);
+
+            CreateMesh();
+            //InitSprite(gameObject, GetComponent<Renderer>(), ref myCollider,);
         }
+
+        private void CreateMesh()
+        {
+            Vector2 minCoords = myCollider.bounds.min;
+            Vector2 maxCoords = myCollider.bounds.max;
+            Bounds spriteBounds = myCollider.bounds;
+            Vector2 parentCentroid = Vector2.zero;
+            Vector2 uvOffset = Vector2.zero;
+
+            Mesh spriteMesh = new Mesh();
+            spriteMesh.name = "SlicedSpriteMesh";
+            myMeshFilter.mesh = spriteMesh;
+            myMeshRenderer.sortingOrder = orderInLayer;
+            myMeshRenderer.material.color = TeritoryColor;
+
+            Vector2[] polygonPoints = myCollider.points;
+            int numVertices = polygonPoints.Length;
+            Vector3[] vertices = new Vector3[numVertices];
+            Color[] colors = new Color[numVertices];
+            Vector2[] uvs = new Vector2[numVertices];
+            int[] triangles;
+
+            // Convert vector2 -> vector3
+            for (int loop = 0; loop < vertices.Length; loop++)
+            {
+                vertices[loop] = polygonPoints[loop];
+                colors[loop] = Color.white;
+            }
+
+            Vector2 uvWidth = maxCoords - minCoords;
+            Vector3 boundsSize = spriteBounds.size;
+            Vector2 invBoundsSize = new Vector2(1.0f / boundsSize.x, 1.0f / boundsSize.y);
+
+            for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++)
+            {
+                Vector2 vertex = polygonPoints[vertexIndex] + parentCentroid;
+                float widthFraction = 0.5f + ((vertex.x * invBoundsSize.x) + (uvOffset.x));
+                float heightFraction = 0.5f + ((vertex.y * invBoundsSize.y) + (uvOffset.y));
+
+                
+
+                Vector2 texCoords = new Vector2();
+
+                //if (rotated)
+                //{
+                //    texCoords.y = maxCoords.y - (uvWidth.y * (1.0f - widthFraction));
+                //    texCoords.x = minCoords.x + (uvWidth.x * heightFraction);
+                //}
+                //else
+                //{
+                    texCoords.x = minCoords.x + (uvWidth.x * widthFraction);
+                    texCoords.y = minCoords.y + (uvWidth.y * heightFraction);
+                //}
+
+                uvs[vertexIndex] = texCoords;
+            }
+
+            List<Vector2> polyPointList = new List<Vector2>(polygonPoints);
+            triangles = SpriteSlicer2D.Triangulate(ref polyPointList);
+
+
+            spriteMesh.Clear();
+            spriteMesh.vertices = vertices;
+            spriteMesh.uv = uvs;
+            spriteMesh.triangles = triangles;
+            spriteMesh.colors = colors;
+            spriteMesh.RecalculateBounds();
+            spriteMesh.RecalculateNormals();
+        }
+
+
+        //============================================================================================================================================
 
         // Vector sorting function
         static SpriteSlicer2D.VectorComparer s_VectorComparer = new SpriteSlicer2D.VectorComparer();
@@ -197,8 +276,140 @@ namespace EDGELORD.TreeBuilder
                 //    Debug.Log(Selection.gameObjects[loop].name + " could not be made convex, please adjust shape manually");
                 //}
             }
-            //}
-        //}
+            
+
+        }
+        /// <summary>
+        /// Initialise this sprite using the given polygon definition
+        /// </summary>
+        void InitSprite(GameObject parentObject, Renderer parentRenderer, ref PolygonCollider2D polygon, ref Vector2[] polygonPoints, Vector3 minCoords, Vector3 maxCoords, Bounds spriteBounds, Material material, bool rotated, bool hFlipped, bool vFlipped, Vector2 parentCentroid, Vector2 uvOffset, bool isConcave)
+        {
+            var m_MinCoords = minCoords;
+            var m_MaxCoords = maxCoords;
+            var m_SpriteBounds = spriteBounds;
+            var m_VFlipped = vFlipped;
+            var m_HFlipped = hFlipped;
+            var m_Rotated = rotated;
+            m_SpriteBounds = spriteBounds;
+            var m_UVOffset = uvOffset;
+
+            //var m_Centroid 
+
+            gameObject.tag = parentObject.tag;
+            gameObject.layer = parentObject.layer;
+
+            Mesh spriteMesh = new Mesh();
+            spriteMesh.name = "SlicedSpriteMesh";
+            myMeshFilter.mesh = spriteMesh;
+
+            int numVertices = polygonPoints.Length;
+            Vector3[] vertices = new Vector3[numVertices];
+            Color[] colors = new Color[numVertices];
+            Vector2[] uvs = new Vector2[numVertices];
+            int[] triangles;
+
+            // Convert vector2 -> vector3
+            for (int loop = 0; loop < vertices.Length; loop++)
+            {
+                vertices[loop] = polygonPoints[loop];
+                colors[loop] = Color.white;
+            }
+
+            Vector2 uvWidth = maxCoords - minCoords;
+            Vector3 boundsSize = spriteBounds.size;
+            Vector2 invBoundsSize = new Vector2(1.0f / boundsSize.x, 1.0f / boundsSize.y);
+
+            for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++)
+            {
+                Vector2 vertex = polygonPoints[vertexIndex] + parentCentroid;
+                float widthFraction = 0.5f + ((vertex.x * invBoundsSize.x) + (uvOffset.x));
+                float heightFraction = 0.5f + ((vertex.y * invBoundsSize.y) + (uvOffset.y));
+
+                if (hFlipped)
+                {
+                    widthFraction = 1.0f - widthFraction;
+                }
+
+                if (vFlipped)
+                {
+                    heightFraction = 1.0f - heightFraction;
+                }
+
+                Vector2 texCoords = new Vector2();
+
+                if (rotated)
+                {
+                    texCoords.y = maxCoords.y - (uvWidth.y * (1.0f - widthFraction));
+                    texCoords.x = minCoords.x + (uvWidth.x * heightFraction);
+                }
+                else
+                {
+                    texCoords.x = minCoords.x + (uvWidth.x * widthFraction);
+                    texCoords.y = minCoords.y + (uvWidth.y * heightFraction);
+                }
+
+                uvs[vertexIndex] = texCoords;
+            }
+
+            if (isConcave)
+            {
+                List<Vector2> polyPointList = new List<Vector2>(polygonPoints);
+                triangles = SpriteSlicer2D.Triangulate(ref polyPointList);
+            }
+            else
+            {
+                int triangleIndex = 0;
+                triangles = new int[numVertices * 3];
+
+                for (int vertexIndex = 1; vertexIndex < numVertices - 1; vertexIndex++)
+                {
+                    triangles[triangleIndex++] = 0;
+                    triangles[triangleIndex++] = vertexIndex + 1;
+                    triangles[triangleIndex++] = vertexIndex;
+                }
+            }
+
+            spriteMesh.Clear();
+            spriteMesh.vertices = vertices;
+            spriteMesh.uv = uvs;
+            spriteMesh.triangles = triangles;
+            spriteMesh.colors = colors;
+            spriteMesh.RecalculateBounds();
+            spriteMesh.RecalculateNormals();
+            ;
+
+            Vector2 localCentroid = Vector3.zero;
+
+            if (SpriteSlicer2D.s_CentreChildSprites)
+            {
+                localCentroid = spriteMesh.bounds.center;
+
+                // Finally, fix up our mesh, collider, and object position to at the same position as the pivot point
+                for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++)
+                {
+                    vertices[vertexIndex] -= (Vector3)localCentroid;
+                }
+
+                for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++)
+                {
+                    polygonPoints[vertexIndex] -= localCentroid;
+                }
+
+                //m_Centroid = localCentroid + parentCentroid;
+                polygon.points = polygonPoints;
+                spriteMesh.vertices = vertices;
+                spriteMesh.RecalculateBounds();
+            }
+
+            //Transform parentTransform = parentObject.transform;
+            //m_Transform.parent = parentTransform.parent;
+            //m_Transform.position = parentTransform.position + (parentTransform.rotation * (Vector3)localCentroid);
+            //m_Transform.rotation = parentTransform.rotation;
+            //m_Transform.localScale = parentTransform.localScale;
+            //m_MeshRenderer.material = material;
+
+            //m_MeshRenderer.sortingLayerID = parentRenderer.sortingLayerID;
+            //m_MeshRenderer.sortingOrder = parentRenderer.sortingOrder;
+        }
     }
-}
 }
