@@ -15,7 +15,7 @@ namespace EDGELORD.TreeBuilder
             _treeRoot.OnBranchCutAction += OnBranchCutEffects;
 
             sfxSource = gameObject.AddComponent<AudioSource>() as AudioSource;
-            sfxSource.pitch += (Random.value - 0.5f) * 0.5f;
+            sfxSource.pitch += (Random.value - 0.5f) * 0.2f;
         }
 
         private void OnBranchCutEffects(Vector3 worldPos)

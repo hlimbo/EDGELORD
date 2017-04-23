@@ -5,7 +5,7 @@ using UnityEngine;
 using TMPro;
 
 public class ScoreDisplay : MonoBehaviour {
-    public static string scoreString = "Score ";
+    public string scoreString = "Score ";
 
     private TMP_Text textBox;
     

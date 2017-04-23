@@ -34,7 +34,7 @@ public class SfxPlayer : Singleton<SfxPlayer> {
 		}
 
         // randomize pitch a bit to (hopefully) avoid multiplying amplitude for simultaneous sounds
-        audioSource.pitch += (Random.value - 0.5f) * 1;
+        audioSource.pitch += (Random.value - 0.5f) * 0.5f;
 	}
 
 	public void PlaySoundEffect(string name, float volume = 1.0f) {
