@@ -51,38 +51,26 @@ public class CharacterActionScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (manager.gameRunning) {
-            if (!smithing) {
-                if (inputs.getActionDown()) {
-                    Collider2D collider = Physics2D.OverlapCircle(transform.position, overlapRadius, LayerMask.GetMask("Default"));
-                    if (collider != null) {
-                        sfxPlayer.PlaySoundEffect("sword_hit");
-                        EDGELORD.TreeBuilder.TreeBranch branch = collider.transform.GetComponentInParent<EDGELORD.TreeBuilder.TreeBranch>();
-                        if (branch)
-                        {
-                            if (branch.OwningPlayer == OwningPlayer)
-                            {
-                                smithing = true;
-                                movement.movementEnabled = false;
-                                transform.position = branch.GetProjectedPosition(transform.position, true);
-                                StartCoroutine(setDirectionAndPower(branch));
-                            }
-                        }
-                        else
-                        {
-                            Debug.LogWarning("No Branch Found!!!");
-                        }
-                    }
-                }
-            }
-        }
-        else {
+        if (!smithing) {
             if (inputs.getActionDown()) {
                 Collider2D collider = Physics2D.OverlapCircle(transform.position, overlapRadius, LayerMask.GetMask("Default"));
                 if (collider != null) {
+                    sfxPlayer.PlaySoundEffect("sword_hit");
                     EDGELORD.TreeBuilder.TreeBranch branch = collider.transform.GetComponentInParent<EDGELORD.TreeBuilder.TreeBranch>();
-                    if (branch.OwningPlayer == OwningPlayer) {
-                        ready = true;
+                    if (branch)
+                    {
+                        if (branch.OwningPlayer == OwningPlayer)
+                        {
+                            ready = true;
+                            smithing = true;
+                            movement.movementEnabled = false;
+                            transform.position = branch.GetProjectedPosition(transform.position, true);
+                            StartCoroutine(setDirectionAndPower(branch));
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning("No Branch Found!!!");
                     }
                 }
             }
@@ -94,7 +82,7 @@ public class CharacterActionScript : MonoBehaviour {
         ghostBlade.gameObject.SetActive(true);
         float direction = 0;
         float length = minLength;
-        while (!inputs.getActionDown() && branch.IsAttached && branch.GetProjectedPosition(transform.position).magnitude<=branch.BranchLength) {
+        while ((!inputs.getActionDown() && branch.IsAttached && branch.GetProjectedPosition(transform.position).magnitude<=branch.BranchLength) || !manager.gameRunning) {
             direction += inputs.getMovementDirection().x*rotationSpeed;
             float radDirection = (direction * Mathf.Deg2Rad) + (Mathf.PI / 2);
             length = Mathf.Clamp(length+inputs.getMovementDirection().y*lengthChangeSpeed, minLength, maxLength);

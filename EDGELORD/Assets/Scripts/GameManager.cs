@@ -211,9 +211,9 @@ namespace EDGELORD.Manager {
         }
 
         private void enablePlayerInput() {
-            foreach (var player in players) {
-                player.GetComponent<CharacterMovementScript>().movementEnabled = true;
-            }
+            //foreach (var player in players) {
+            //    player.GetComponent<CharacterMovementScript>().movementEnabled = true;
+            //}
         }
 
         private void disablePlayerMovement(bool resetPosition = false) {
