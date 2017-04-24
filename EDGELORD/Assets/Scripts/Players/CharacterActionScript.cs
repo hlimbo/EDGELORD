@@ -54,6 +54,22 @@ public class CharacterActionScript : MonoBehaviour {
         if (!smithing) {
             if (inputs.getActionDown()) {
                 Collider2D collider = Physics2D.OverlapCircle(transform.position, overlapRadius, LayerMask.GetMask("Default"));
+                Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, overlapRadius, LayerMask.GetMask("Default"));
+                foreach (Collider2D c in colliders)
+                {
+                    var branch = c.transform.GetComponentInParent<EDGELORD.TreeBuilder.TreeBranch>();
+                    if (branch)
+                    {
+                        if (branch.GetProjectedPosition(transform.position).magnitude <= branch.BranchLength)
+                        {
+                            if (branch.OwningPlayer == OwningPlayer)
+                            {
+                                collider = c;
+                                break;
+                            }
+                        }
+                    }
+                }
                 if (collider != null) {
                     sfxPlayer.PlaySoundEffect("sword_hit");
                     EDGELORD.TreeBuilder.TreeBranch branch = collider.transform.GetComponentInParent<EDGELORD.TreeBuilder.TreeBranch>();
