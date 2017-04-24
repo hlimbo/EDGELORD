@@ -1,10 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using UnityEngine.SceneManagement;
 
-public class ControlsButton : MonoBehaviour {
-    public bool stopMusic = false;
+public class SwingingButton : MonoBehaviour {
 
     private Button button;
     private RectTransform rect;
@@ -17,13 +15,12 @@ public class ControlsButton : MonoBehaviour {
         PHASE2,
         PHASE3
     }
-    private Phases swingState = ControlsButton.Phases.PHASE1;
 
-    void Awake()
+    private Phases swingState = MainSwing.Phases.PHASE1;
+
+    void Start()
     {
-        button = GetComponent<Button>();
         rect = GetComponent<RectTransform>();
-        button.onClick.AddListener(ToControls);
     }
 
     void FixedUpdate()
@@ -32,7 +29,7 @@ public class ControlsButton : MonoBehaviour {
         if (isSwinging)
         {
             updateTime--;
-            if (swingState == ControlsButton.Phases.PHASE1)
+            if (swingState == MainSwing.Phases.PHASE1)
             {
                 if (updateTime == 0)
                 {
@@ -42,11 +39,11 @@ public class ControlsButton : MonoBehaviour {
                 }
                 if (currentX >= 30f)
                 {
-                    swingState = ControlsButton.Phases.PHASE2;
+                    swingState = MainSwing.Phases.PHASE2;
                 }
             }
 
-            else if (swingState == ControlsButton.Phases.PHASE2)
+            else if (swingState == MainSwing.Phases.PHASE2)
             {
                 if (updateTime == 0)
                 {
@@ -56,10 +53,10 @@ public class ControlsButton : MonoBehaviour {
                 }
                 if (currentX <= 345f)
                 {
-                    swingState = ControlsButton.Phases.PHASE3;
+                    swingState = MainSwing.Phases.PHASE3;
                 }
             }
-            else if (swingState == ControlsButton.Phases.PHASE3)
+            else if (swingState == MainSwing.Phases.PHASE3)
             {
                 if (updateTime == 0)
                 {
@@ -69,7 +66,7 @@ public class ControlsButton : MonoBehaviour {
                 }
                 if (currentX >= 357)
                 {
-                    swingState = ControlsButton.Phases.PHASE1;
+                    swingState = MainSwing.Phases.PHASE1;
                     rect.eulerAngles = new Vector3(0, 0, 0);
                     isSwinging = false;
                 }
@@ -77,24 +74,6 @@ public class ControlsButton : MonoBehaviour {
 
         }
     }
-
-    void ToControls()
-    {
-        if (stopMusic) {
-            StartCoroutine(stopMusicAndLoad());
-        } else {
-            SceneManager.LoadScene("HowToPlay");
-        }
-    }
-
-    private IEnumerator stopMusicAndLoad() {
-        MusicPlayer musicPlayer = (MusicPlayer)FindObjectOfType(typeof(MusicPlayer));
-        musicPlayer.FadeOutAndStop(0.9f);
-        yield return new WaitForSeconds(1.0f);
-        SceneManager.LoadScene("HowToPlay");
-    }
-
-
     public void Swing()
     {
         if (!isSwinging)
@@ -104,3 +83,4 @@ public class ControlsButton : MonoBehaviour {
         }
     }
 }
+
