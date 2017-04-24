@@ -88,9 +88,9 @@ public class CharacterActionScript : MonoBehaviour {
         float length = minLength;
         while ((!inputs.getActionDown() && branch.IsAttached && branch.IsPointOnBranch(transform.position))//branch.GetProjectedPosition(transform.position).magnitude<=branch.BranchLength) 
             || !manager.gameRunning) {
-            direction += inputs.getMovementDirection().x*rotationSpeed;
+            direction += inputs.getMovementDirection().x*rotationSpeed*Time.deltaTime;
             float radDirection = (direction * Mathf.Deg2Rad) + (Mathf.PI / 2);
-            length = Mathf.Clamp(length+inputs.getMovementDirection().y*lengthChangeSpeed, minLength, maxLength);
+            length = Mathf.Clamp(length+inputs.getMovementDirection().y*lengthChangeSpeed*Time.deltaTime, minLength, maxLength);
             bladeScript.setRotation(branch.transform.TransformDirection(new Vector2(-Mathf.Cos(radDirection), Mathf.Sin(radDirection))));
             bladeScript.setScale(new Vector2(Mathf.Clamp(2.0f / length, minWidth, maxWidth), length));
             yield return null;
