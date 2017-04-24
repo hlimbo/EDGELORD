@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
-public class CreditsButton : MonoBehaviour {
+public class ControlsButton : MonoBehaviour {
+
     private Button button;
     private RectTransform rect;
     private bool isSwinging;
@@ -15,13 +16,13 @@ public class CreditsButton : MonoBehaviour {
         PHASE2,
         PHASE3
     }
+    private Phases swingState = ControlsButton.Phases.PHASE1;
 
-    private Phases swingState = CreditsButton.Phases.PHASE1;
-
-    void Start () {
+    void Awake()
+    {
         button = GetComponent<Button>();
         rect = GetComponent<RectTransform>();
-        //button.onClick.AddListener(QuitProgram); ToDo: Show credits (popup or new scene?)
+        button.onClick.AddListener(ToControls);
     }
 
     void FixedUpdate()
@@ -30,7 +31,7 @@ public class CreditsButton : MonoBehaviour {
         if (isSwinging)
         {
             updateTime--;
-            if (swingState == CreditsButton.Phases.PHASE1)
+            if (swingState == ControlsButton.Phases.PHASE1)
             {
                 if (updateTime == 0)
                 {
@@ -40,11 +41,11 @@ public class CreditsButton : MonoBehaviour {
                 }
                 if (currentX >= 30f)
                 {
-                    swingState = CreditsButton.Phases.PHASE2;
+                    swingState = ControlsButton.Phases.PHASE2;
                 }
             }
 
-            else if (swingState == CreditsButton.Phases.PHASE2)
+            else if (swingState == ControlsButton.Phases.PHASE2)
             {
                 if (updateTime == 0)
                 {
@@ -54,10 +55,10 @@ public class CreditsButton : MonoBehaviour {
                 }
                 if (currentX <= 345f)
                 {
-                    swingState = CreditsButton.Phases.PHASE3;
+                    swingState = ControlsButton.Phases.PHASE3;
                 }
             }
-            else if (swingState == CreditsButton.Phases.PHASE3)
+            else if (swingState == ControlsButton.Phases.PHASE3)
             {
                 if (updateTime == 0)
                 {
@@ -67,7 +68,7 @@ public class CreditsButton : MonoBehaviour {
                 }
                 if (currentX >= 357)
                 {
-                    swingState = CreditsButton.Phases.PHASE1;
+                    swingState = ControlsButton.Phases.PHASE1;
                     rect.eulerAngles = new Vector3(0, 0, 0);
                     isSwinging = false;
                 }
@@ -75,6 +76,13 @@ public class CreditsButton : MonoBehaviour {
 
         }
     }
+
+    void ToControls()
+    {
+        SceneManager.LoadScene("HowToPlay");
+    }
+
+
     public void Swing()
     {
         if (!isSwinging)
