@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlaySignWoosh : MonoBehaviour {
 
-    public AudioClip wood;
     private AudioSource audioSource;
 
     // Use this for initialization
