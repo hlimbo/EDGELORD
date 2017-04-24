@@ -20,13 +20,14 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 	public double StartMusicDelay = 0.0F;
 	public bool StartMusicOnInit = true;
 
-	private MusicTrack[] tracks;
+	public GameObject[] tracks;
     private MusicTrack currentTrack;
 	private AudioSource[] audioSources;
 	private float currentVolume = 1.0F;
 	private double nextEventTime;
 	private int flip = 0;
 	private bool isPlaying = false;
+    private bool isInitialized = false;
 
     private Dictionary<string, MusicTrack> trackDict;
 
@@ -48,33 +49,46 @@ public class MusicPlayer : Singleton<MusicPlayer> {
         }
     }
 	// Use this for initialization
-	void Start () {
-		audioSources = new AudioSource[2];
+	void Start ()
+    {
+        if (!isInitialized) {
+            Init();
+        }
+    }
+
+    private void Init()
+    {
+        audioSources = new AudioSource[2];
         trackDict = new Dictionary<string, MusicTrack>();
-		for (int i = 0; i < audioSources.Length; ++i) {
-			GameObject child = new GameObject("Audio Source");
-			child.transform.parent = gameObject.transform;
-			audioSources[i] = child.AddComponent<AudioSource>();
+        for (int i = 0; i < audioSources.Length; ++i)
+        {
+            GameObject child = new GameObject("Audio Source");
+            child.transform.parent = gameObject.transform;
+            audioSources[i] = child.AddComponent<AudioSource>();
             audioSources[i].volume = Volume;
-		}
-
-		tracks = GetComponentsInChildren<MusicTrack>();
-
-        // build dictionary to be able to refer to tracks by name
-        foreach (MusicTrack track in tracks) {
-            Debug.Log("added " + track.name + " to tracks.");
-            trackDict[track.name] = track;
         }
 
-        currentTrack = tracks[0]; // default is first child MusicTrack in the editor
+        // instantiate prefab as an object, then add to trackDict to refer to it by name
+        foreach (GameObject trackPrefab in tracks)
+        {
+            var trackObject = Instantiate(trackPrefab, gameObject.transform);
+            trackObject.transform.parent = gameObject.transform;
+            Debug.Log("added " + trackPrefab.name + " to tracks.");
+            trackDict[trackPrefab.name] = trackObject.GetComponent<MusicTrack>();
+        }
 
-		if (StartMusicOnInit) {
-			StartMusic();
-		}
-	}
-	
-	// Update is called once per frame
-	void Update () {
+        currentTrack = trackDict[tracks[0].name]; // default is first child MusicTrack in the editor
+
+        if (StartMusicOnInit)
+        {
+            StartMusic();
+        }
+
+        isInitialized = true;
+    }
+
+    // Update is called once per frame
+    void Update () {
 		if (!isPlaying) {
 			return;
 		}
@@ -90,6 +104,8 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 	}
 
 	public void StartMusic() {
+        if (isPlaying) return;
+
 		isPlaying = true;
 		nextEventTime = AudioSettings.dspTime + StartMusicDelay;
 		Debug.Log("MusicPlayer started");
