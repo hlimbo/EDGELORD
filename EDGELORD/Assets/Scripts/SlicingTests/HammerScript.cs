@@ -10,6 +10,7 @@ public class HammerScript : MonoBehaviour
     private Animator animator;
     private SfxPlayer sfxPlayer;
     private PlayerInputManager inputs;
+    public bool inMenu = false;
 
     //public GameObject particleFXPrefab;
     public GameObject particleFXGO;
@@ -35,9 +36,12 @@ public class HammerScript : MonoBehaviour
             playerToFind = "Player2";
         }
 
-        if(playerToFind != null)
+        if (!inMenu)
         {
-            inputs = (PlayerInputManager)GameObject.Find(playerToFind).GetComponent<PlayerInputManager>();
+            if (playerToFind != null)
+            {
+                inputs = (PlayerInputManager)GameObject.Find(playerToFind).GetComponent<PlayerInputManager>();
+            }
         }
 
         if (inputs == null)
@@ -47,9 +51,16 @@ public class HammerScript : MonoBehaviour
 
     void Update()
     {
-        if(inputs.getActionDown())
+        if (!inMenu)
         {
-            //animator.SetBool("canSwingHammer", true);
+            if (inputs.getActionDown())
+            {
+                //animator.SetBool("canSwingHammer", true);
+                animator.SetTrigger("SwingHammer");
+            }
+        }
+        else
+        {
             animator.SetTrigger("SwingHammer");
         }
     }

@@ -15,6 +15,7 @@ namespace EDGELORD.Manager {
         private ScoreDisplay player2ScoreDisplay;
         private TimerDisplay timerDisplay;
         private WinnerDisplay winnerDisplay;
+        private CountdownDisplay countdownDisplay;
         private GameObject restartButton;
         private GameObject menuButton;
 
@@ -52,6 +53,7 @@ namespace EDGELORD.Manager {
             ui = (Canvas)FindObjectOfType<Canvas>();
             timerDisplay = ui.GetComponentInChildren<TimerDisplay>();
             winnerDisplay = ui.GetComponent<WinnerDisplay>();
+            countdownDisplay = ui.GetComponent<CountdownDisplay>();
 
             Component[] playerScoreDisplays = ui.GetComponentsInChildren<ScoreDisplay>();
             player1ScoreDisplay = (ScoreDisplay)playerScoreDisplays[0];
@@ -145,14 +147,10 @@ namespace EDGELORD.Manager {
         }
 
         private IEnumerator startGameWithCountdown () {
-            int downCounter = countdownLengthInSeconds;
-            while (downCounter > 0) {
-                Debug.Log(System.Convert.ToString(downCounter)); // TODO: show message onscreen here
-                --downCounter;
-                yield return new WaitForSeconds(1);
-            }
-            // TODO: hide message here
+            yield return countdownDisplay.StartCountdownCoroutine();
             StartCoroutine(timerCoroutine);
+            yield return new WaitForSeconds(1);
+            countdownDisplay.HideCountdown();
         }
 
         void StopGame () {

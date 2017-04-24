@@ -58,11 +58,19 @@ public class CharacterActionScript : MonoBehaviour {
                     if (collider != null) {
                         sfxPlayer.PlaySoundEffect("sword_hit");
                         EDGELORD.TreeBuilder.TreeBranch branch = collider.transform.GetComponentInParent<EDGELORD.TreeBuilder.TreeBranch>();
-                        if (branch.OwningPlayer == OwningPlayer) {
-                            smithing = true;
-                            movement.movementEnabled = false;
-                            transform.position = branch.GetProjectedPosition(transform.position, true);
-                            StartCoroutine(setDirectionAndPower(branch));
+                        if (branch)
+                        {
+                            if (branch.OwningPlayer == OwningPlayer)
+                            {
+                                smithing = true;
+                                movement.movementEnabled = false;
+                                transform.position = branch.GetProjectedPosition(transform.position, true);
+                                StartCoroutine(setDirectionAndPower(branch));
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogWarning("No Branch Found!!!");
                         }
                     }
                 }
