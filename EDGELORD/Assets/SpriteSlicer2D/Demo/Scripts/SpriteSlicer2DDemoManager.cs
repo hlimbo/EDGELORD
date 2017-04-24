@@ -9,6 +9,8 @@ public class SpriteSlicer2DDemoManager : MonoBehaviour
 	List<SpriteSlicer2DSliceInfo> m_SlicedSpriteInfo = new List<SpriteSlicer2DSliceInfo>();
 	TrailRenderer m_TrailRenderer;
 
+    public KeyCode EnableKey = KeyCode.LeftShift;
+
 	struct MousePosition
 	{
 		public Vector3 m_WorldPosition;
@@ -35,31 +37,32 @@ public class SpriteSlicer2DDemoManager : MonoBehaviour
 	/// </summary>
 	void Update () 
 	{
-		// Right mouse button - explode any sprite the we click on
-		if(Input.GetMouseButtonDown(0) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftAlt)))
-		{
-			Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			mouseWorldPosition.z = Camera.main.transform.position.z;
+		//// Right mouse button - explode any sprite the we click on
+		//if(Input.GetMouseButtonDown(0) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftAlt)))
+		//{
+		//	Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		//	mouseWorldPosition.z = Camera.main.transform.position.z;
 
-			RaycastHit2D rayCastResult = Physics2D.Raycast(mouseWorldPosition, new Vector3(0, 0, 0), 0.0f);
+		//	RaycastHit2D rayCastResult = Physics2D.Raycast(mouseWorldPosition, new Vector3(0, 0, 0), 0.0f);
 
-			if (rayCastResult.rigidbody)
-			{
-				if(Input.GetKey(KeyCode.LeftControl))
-				{
-					SpriteSlicer2D.ExplodeSprite(rayCastResult.rigidbody.gameObject, 16, 100.0f, true, ref m_SlicedSpriteInfo);
+		//	if (rayCastResult.rigidbody)
+		//	{
+		//		if(Input.GetKey(KeyCode.LeftControl))
+		//		{
+		//			SpriteSlicer2D.ExplodeSprite(rayCastResult.rigidbody.gameObject, 16, 100.0f, true, ref m_SlicedSpriteInfo);
 
-					if(m_SlicedSpriteInfo.Count == 0)
-					{
-						// Couldn't cut for whatever reason, add some force anyway
-						rayCastResult.rigidbody.AddForce(new Vector2(0.0f, 400.0f));
-					}
-				}
-			}
-		}
+		//			if(m_SlicedSpriteInfo.Count == 0)
+		//			{
+		//				// Couldn't cut for whatever reason, add some force anyway
+		//				rayCastResult.rigidbody.AddForce(new Vector2(0.0f, 400.0f));
+		//			}
+		//		}
+		//	}
+		//}
 
 		// Left mouse button - hold and swipe to cut objects
-		else if(Input.GetMouseButton(0))
+		//else 
+        if (Input.GetMouseButton(0) && Input.GetKey(EnableKey))
 		{
 			bool mousePositionAdded = false;
 			m_MouseRecordTimer -= Time.deltaTime;
@@ -170,12 +173,9 @@ public class SpriteSlicer2DDemoManager : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 		}
 
-        m_FadeFragments = GUI.Toggle(new Rect(20, 50, 400, 20), m_FadeFragments, "Fade out sprites once destroyed");
-
-		GUI.Label(new Rect((Screen.width/2),20,900,20), "Left Mouse Button + Drag Cursor: Slice Objects");
-		GUI.Label(new Rect((Screen.width/2),40,900,20), "(Cuts objects intersected by the cursor movement vector)");
-
-		GUI.Label(new Rect((Screen.width/2),80,900,20), "Ctrl + Click Left Mouse Button: Explode Objects");
-		GUI.Label(new Rect((Screen.width/2),100,900,20), "(Randomly slices an objects multiple times, then applies an optional force)");
+        //m_FadeFragments = GUI.Toggle(new Rect(20, 50, 400, 20), m_FadeFragments, "Fade out sprites once destroyed");
+        GUI.Label(new Rect(20, 40, 900, 20), "Left Mouse Button (On Sword): Draw Sword");
+        GUI.Label(new Rect(20 ,60,900,20), "Left Shift + Left Mouse Button + Drag Cursor: Slice Objects");
+		
 	}
 }
