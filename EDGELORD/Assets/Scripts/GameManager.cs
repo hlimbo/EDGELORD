@@ -155,8 +155,8 @@ namespace EDGELORD.Manager {
         private IEnumerator startGameWithCountdown () {
             yield return countdownDisplay.StartCountdownCoroutine();
             StartCoroutine(timerCoroutine);
-            yield return new WaitForSeconds(1);
             gameInProgress = true;
+            yield return new WaitForSeconds(1);
             countdownDisplay.HideCountdown();
         }
 
