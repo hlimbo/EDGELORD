@@ -23,19 +23,19 @@ public class CountdownDisplay : MonoBehaviour {
         target.SetActive(false);
     }
 
-    public void DoFullCountdown () {
-        StartCoroutine(DoFullCountdownCoroutine());
+    public void DoFullCountdown (int countDownInSeconds = 3) {
+        StartCoroutine(DoFullCountdownCoroutine(countDownInSeconds));
     }
 
-    private IEnumerator DoFullCountdownCoroutine() {
-        yield return StartCountdownCoroutine(false);
+    private IEnumerator DoFullCountdownCoroutine(int countDownInSeconds = 3) {
+        yield return StartCountdownCoroutine(false, countDownInSeconds);
         yield return new WaitForSeconds(1);
         HideCountdown();
     }
 
-    public IEnumerator StartCountdownCoroutine (bool startGame = true) {
+    public IEnumerator StartCountdownCoroutine (bool startGame = true, int countDownInSeconds = 3) {
         ShowCountdown();
-        int countdown = countdownLengthInSecs;
+        int countdown = countDownInSeconds; //countdownLengthInSecs;
         do {
             textBox.text = System.Convert.ToString(countdown);
             --countdown;
