@@ -21,10 +21,12 @@ namespace EDGELORD.Manager {
 
         private GameObject[] winnerMessages;
 
+        private bool gameStarting;
         private bool gameInProgress;
         private bool playersReady;
         private float timeLeft;
         private bool gameEnded;
+        private bool endCountdownStarted;
 
         private IEnumerator timerCoroutine;
         private IEnumerator TEST_scoreUpdateCoroutine;
@@ -49,6 +51,7 @@ namespace EDGELORD.Manager {
             gameEnded = false;
             gameInProgress = false;
             playersReady = false;
+            endCountdownStarted = false;
 
             musicPlayer = (MusicPlayer)FindObjectOfType<MusicPlayer>();
             //sfxPlayer = (SfxPlayer)FindObjectOfType(typeof(SfxPlayer));
@@ -113,9 +116,9 @@ namespace EDGELORD.Manager {
             }
 
             // start the game
-            if (!gameInProgress && playersReady) {
+            if (!gameStarting && playersReady) {
                 StartGame();
-                gameInProgress = true;
+                gameStarting = true;
                 return;
             }          
 
@@ -130,6 +133,10 @@ namespace EDGELORD.Manager {
                 // if (true) { // TODO: get player input to restart the game here
                 //     ResetGame();
                 // }
+            }
+
+            if (timeLeft <= 4 && !endCountdownStarted) {
+                countdownDisplay.DoFullCountdown();
             }
         }
 
@@ -148,13 +155,13 @@ namespace EDGELORD.Manager {
             if (!DEBUG_Disable_Music) {
                 musicPlayer.StartMusic();
             }
-            enablePlayerInput();
             StartCoroutine(startGameWithCountdown());
         }
 
         private IEnumerator startGameWithCountdown () {
             yield return countdownDisplay.StartCountdownCoroutine();
             StartCoroutine(timerCoroutine);
+            gameInProgress = true;
             yield return new WaitForSeconds(1);
             countdownDisplay.HideCountdown();
         }

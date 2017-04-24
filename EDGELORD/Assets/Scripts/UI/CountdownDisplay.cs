@@ -23,7 +23,17 @@ public class CountdownDisplay : MonoBehaviour {
         target.SetActive(false);
     }
 
-    public IEnumerator StartCountdownCoroutine () {
+    public void DoFullCountdown () {
+        StartCoroutine(DoFullCountdownCoroutine());
+    }
+
+    private IEnumerator DoFullCountdownCoroutine() {
+        yield return StartCountdownCoroutine(false);
+        yield return new WaitForSeconds(1);
+        HideCountdown();
+    }
+
+    public IEnumerator StartCountdownCoroutine (bool startGame = true) {
         ShowCountdown();
         int countdown = countdownLengthInSecs;
         do {
@@ -32,7 +42,11 @@ public class CountdownDisplay : MonoBehaviour {
             yield return new WaitForSeconds(1);
         } while (countdown > 0);
 
-        textBox.text = System.Convert.ToString(0);
+        if (startGame) {
+            textBox.text = "Go!";
+        } else {
+            textBox.text = System.Convert.ToString(0);
+        }
 
         // HideCountdown() is called in GameManager so that it can start the timer
         // *before* hiding the countdown
