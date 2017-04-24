@@ -46,11 +46,11 @@ public class CountdownDisplay : MonoBehaviour {
             yield return new WaitForSeconds(1);
         } while (countdown > 0);
 
-        sfxPlayer.PlaySoundEffect("siren"); // play for 0 as well
 
         if (startGame) {
             textBox.text = "Go!";
         } else {
+            sfxPlayer.PlaySoundEffect("siren"); // play for 0 as well
             textBox.text = System.Convert.ToString(0);
         }
 
