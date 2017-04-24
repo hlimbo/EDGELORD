@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using UnityEditor.SceneManagement;
+//using UnityEditor.SceneManagement;
 
 public class CreditsButton : MonoBehaviour {
     private Button button;
