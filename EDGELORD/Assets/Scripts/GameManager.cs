@@ -26,6 +26,7 @@ namespace EDGELORD.Manager {
         private bool playersReady;
         private float timeLeft;
         private bool gameEnded;
+        private bool endCountdownStarted;
 
         private IEnumerator timerCoroutine;
         private IEnumerator TEST_scoreUpdateCoroutine;
@@ -50,6 +51,7 @@ namespace EDGELORD.Manager {
             gameEnded = false;
             gameInProgress = false;
             playersReady = false;
+            endCountdownStarted = false;
 
             musicPlayer = (MusicPlayer)FindObjectOfType<MusicPlayer>();
             //sfxPlayer = (SfxPlayer)FindObjectOfType(typeof(SfxPlayer));
@@ -131,6 +133,10 @@ namespace EDGELORD.Manager {
                 // if (true) { // TODO: get player input to restart the game here
                 //     ResetGame();
                 // }
+            }
+
+            if (timeLeft <= 4 && !endCountdownStarted) {
+                countdownDisplay.DoFullCountdown();
             }
         }
 
