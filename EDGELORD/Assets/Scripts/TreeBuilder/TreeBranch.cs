@@ -288,6 +288,12 @@ namespace EDGELORD.TreeBuilder
             return closestObjectToBase;
         }
 
+        public bool IsPointOnBranch(Vector3 worldPos)
+        {
+            PolygonCollider2D spritePolygon = branchSprite.GetComponent<PolygonCollider2D>();
+            return spritePolygon.OverlapPoint((Vector2)worldPos);
+        }
+
         public Vector3 GetProjectedPosition(Vector3 worldPos, bool isWorld = false)
         {
             var projVector = Vector3.Project(this.transform.InverseTransformPoint(worldPos), Vector3.up);

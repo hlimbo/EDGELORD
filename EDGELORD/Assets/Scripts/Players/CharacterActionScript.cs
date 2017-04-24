@@ -59,13 +59,16 @@ public class CharacterActionScript : MonoBehaviour {
                     EDGELORD.TreeBuilder.TreeBranch branch = collider.transform.GetComponentInParent<EDGELORD.TreeBuilder.TreeBranch>();
                     if (branch)
                     {
-                        if (branch.OwningPlayer == OwningPlayer)
+                        if (branch.GetProjectedPosition(transform.position).magnitude <= branch.BranchLength)
                         {
-                            ready = true;
-                            smithing = true;
-                            movement.movementEnabled = false;
-                            transform.position = branch.GetProjectedPosition(transform.position, true);
-                            StartCoroutine(setDirectionAndPower(branch));
+                            if (branch.OwningPlayer == OwningPlayer)
+                            {
+                                ready = true;
+                                smithing = true;
+                                movement.movementEnabled = false;
+                                transform.position = branch.GetProjectedPosition(transform.position, true);
+                                StartCoroutine(setDirectionAndPower(branch));
+                            }
                         }
                     }
                     else
@@ -82,7 +85,8 @@ public class CharacterActionScript : MonoBehaviour {
         ghostBlade.gameObject.SetActive(true);
         float direction = 0;
         float length = minLength;
-        while ((!inputs.getActionDown() && branch.IsAttached && branch.GetProjectedPosition(transform.position).magnitude<=branch.BranchLength) || !manager.gameRunning) {
+        while ((!inputs.getActionDown() && branch.IsAttached && branch.IsPointOnBranch(transform.position))//branch.GetProjectedPosition(transform.position).magnitude<=branch.BranchLength) 
+            || !manager.gameRunning) {
             direction += inputs.getMovementDirection().x*rotationSpeed;
             float radDirection = (direction * Mathf.Deg2Rad) + (Mathf.PI / 2);
             length = Mathf.Clamp(length+inputs.getMovementDirection().y*lengthChangeSpeed, minLength, maxLength);
@@ -90,7 +94,8 @@ public class CharacterActionScript : MonoBehaviour {
             bladeScript.setScale(new Vector2(Mathf.Clamp(2.0f / length, minWidth, maxWidth), length));
             yield return null;
         }
-        if (branch.IsAttached && branch.GetProjectedPosition(transform.position).magnitude <= branch.BranchLength) {
+        if (branch.IsAttached && branch.IsPointOnBranch(transform.position))//branch.GetProjectedPosition(transform.position).magnitude <= branch.BranchLength)
+        {
             direction *= Mathf.Deg2Rad;
             direction += Mathf.PI / 2;
             root.CreateBranch(new EDGELORD.TreeBuilder.TreeBranchData(length, Mathf.Clamp(2.0f / length, minWidth, maxWidth), branch.transform.TransformDirection(new Vector2(-Mathf.Cos(direction), Mathf.Sin(direction))), branch, branch.transform.InverseTransformPoint(transform.position)));
