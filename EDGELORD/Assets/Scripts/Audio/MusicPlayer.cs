@@ -54,6 +54,7 @@ public class MusicPlayer : Singleton<MusicPlayer> {
             switch (scene.buildIndex)
             {
                 case 0:
+                    ForcePlayTrack("Menu Music", true);
                     //StartMusic();
                     //PlayMusic("Menu Music");
                     break;
@@ -190,7 +191,8 @@ public class MusicPlayer : Singleton<MusicPlayer> {
     }
 
 	public void StopMusic() {
-		isPlaying = false;
+        if(!isPlaying) return;
+        isPlaying = false;
 		FadeOutAndStop(0.06f); // fadeout super quick so that the audio doesn't pop when stopped
 		Debug.Log("MusicPlayer stopped");
 	}
