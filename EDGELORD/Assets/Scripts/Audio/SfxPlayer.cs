@@ -14,6 +14,7 @@ optionally specifying a volume to play it at.
 public class SfxPlayer : Singleton<SfxPlayer> {
     public float Volume = 1.0f;
     public AudioClip[] soundEffects;
+    public bool randomizePitch = true;
 
 	private AudioSource audioSource;
 	private Dictionary<string, AudioClip> soundEffectsDict;
@@ -34,7 +35,9 @@ public class SfxPlayer : Singleton<SfxPlayer> {
 		}
 
         // randomize pitch a bit to (hopefully) avoid multiplying amplitude for simultaneous sounds
-        audioSource.pitch += (Random.value - 0.5f) * 0.5f;
+        if (randomizePitch) {
+            audioSource.pitch += (Random.value - 0.5f) * 0.5f;
+        }
 	}
 
 	public void PlaySoundEffect(string name, float volume = 1.0f) {
