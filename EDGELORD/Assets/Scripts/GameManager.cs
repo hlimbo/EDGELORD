@@ -21,6 +21,7 @@ namespace EDGELORD.Manager {
 
         private GameObject[] winnerMessages;
 
+        private bool gameStarting;
         private bool gameInProgress;
         private bool playersReady;
         private float timeLeft;
@@ -113,9 +114,9 @@ namespace EDGELORD.Manager {
             }
 
             // start the game
-            if (!gameInProgress && playersReady) {
+            if (!gameStarting && playersReady) {
                 StartGame();
-                gameInProgress = true;
+                gameStarting = true;
                 return;
             }          
 
@@ -148,7 +149,6 @@ namespace EDGELORD.Manager {
             if (!DEBUG_Disable_Music) {
                 musicPlayer.StartMusic();
             }
-            enablePlayerInput();
             StartCoroutine(startGameWithCountdown());
         }
 
@@ -156,6 +156,7 @@ namespace EDGELORD.Manager {
             yield return countdownDisplay.StartCountdownCoroutine();
             StartCoroutine(timerCoroutine);
             yield return new WaitForSeconds(1);
+            gameInProgress = true;
             countdownDisplay.HideCountdown();
         }
 
