@@ -5,7 +5,7 @@ namespace EDGELORD.TreeBuilder
     public class TreeEventEffects : MonoBehaviour
     {
         public AudioClip sound;
-
+        public GameObject SliceEffectPrefab;
         private TreeRoot _treeRoot;
         private AudioSource sfxSource;
 
@@ -22,6 +22,8 @@ namespace EDGELORD.TreeBuilder
         {
             //ToDo: Branch Cutting Events.
             sfxSource.PlayOneShot(sound, 0.5f);
+
+            GameObject go = GameObject.Instantiate(SliceEffectPrefab, worldPos, Quaternion.identity);
         }
     }
 }
