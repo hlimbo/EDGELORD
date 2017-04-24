@@ -16,7 +16,7 @@ public class CharacterActionScript : MonoBehaviour {
     public float maxWidth;
 
 
-
+    private Vector3 _startPos;
     private bool smithing;
     private bool ready;
 
@@ -32,7 +32,9 @@ public class CharacterActionScript : MonoBehaviour {
     CameraShakeScript screenShake;
 
     // Use this for initialization
-    void Start() {
+    void Start()
+    {
+        _startPos = transform.position;
         manager = GameObject.FindObjectOfType<GameManager>();
         inputs = GetComponent<PlayerInputManager>();
         movement = GetComponent<CharacterMovementScript>();
@@ -122,6 +124,7 @@ public class CharacterActionScript : MonoBehaviour {
         }
         else {
             //branch was broken
+            ResetPosition();
             screenShake.screenShake(0.2f, 0.1f);
         }
         smithing = false;
@@ -134,5 +137,10 @@ public class CharacterActionScript : MonoBehaviour {
 
     public void setNotReady(){
         ready = false;
+    }
+
+    public void ResetPosition()
+    {
+        transform.position = _startPos;
     }
 }

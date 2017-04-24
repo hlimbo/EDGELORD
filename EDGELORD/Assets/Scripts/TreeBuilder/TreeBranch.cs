@@ -92,7 +92,7 @@ namespace EDGELORD.TreeBuilder
             var rot = Quaternion.LookRotation(Vector3.forward, (Vector3)data.GrowDirection.normalized);
             this.transform.rotation = rot;
             var targetScale = GetNewProportions(data.Length, data.Width);
-            SendCutEvents(this.transform.position, this.transform.position + (Vector3)data.GrowDirection*data.Length);
+            SendCutEvents(this.transform.position - (Vector3)data.GrowDirection*0.1f, this.transform.position + (Vector3)data.GrowDirection*data.Length);
             if (doCoroutine)
             {
                 StartCoroutine(CoLerpGenerate(this.SpriteHolder.transform, targetScale));
@@ -191,7 +191,12 @@ namespace EDGELORD.TreeBuilder
             }
             var projectedEnterDist = Vector3.Project(this.transform.InverseTransformPoint(info.SliceEnterWorldPosition), Vector3.up);
             var projectedExitDist = Vector3.Project(this.transform.InverseTransformPoint(info.SliceExitWorldPosition), Vector3.up);
+            
             float projectedCutOffDistance = Mathf.Min(projectedEnterDist.magnitude, projectedExitDist.magnitude);
+
+            Vector2 intersect = LineIntersectionPoint(info.SliceEnterWorldPosition, info.SliceExitWorldPosition,
+                this.transform.position, this.transform.position + this.transform.up * BranchLength);
+
             
             foreach (GameObject child in childObjects)
             {
@@ -222,7 +227,8 @@ namespace EDGELORD.TreeBuilder
             closestGameObject.GetComponent<Rigidbody2D>().isKinematic = true;
             branchSprite = closestGameObject.GetComponent<TreeBranch_Sprite>();
 
-            this.BranchData.Length = projectedCutOffDistance;
+            this.BranchData.Length = Vector3.Distance(this.transform.position, intersect);
+            //this.BranchData.Length = projectedCutOffDistance;
             OnSliceBranch(this.transform.TransformPoint(Vector3.up * projectedCutOffDistance));
         }
 
@@ -287,7 +293,24 @@ namespace EDGELORD.TreeBuilder
 
             return closestObjectToBase;
         }
+        static Vector2 LineIntersectionPoint(Vector2 ps1, Vector2 pe1, Vector2 ps2, Vector2 pe2)
+        {
+            float A1 = pe1.y - ps1.y;
+            float B1 = ps1.x - pe1.x;
+            float C1 = A1 * ps1.x + B1 * ps1.y;
+            float A2 = pe2.y - ps2.y;
+            float B2 = ps2.x - pe2.x;
+            float C2 = A2 * ps2.x + B2 * ps2.y;
+            float delta = A1 * B2 - A2 * B1;
 
+            if (delta == 0)
+            {
+                Debug.LogError("Lines are parallel!");
+            }
+
+            float inverseDelta = 1.0f / delta;
+            return new Vector2((B2 * C1 - B1 * C2) * inverseDelta, (A1 * C2 - A2 * C1) * inverseDelta);
+        }
         public bool IsPointOnBranch(Vector3 worldPos)
         {
             PolygonCollider2D spritePolygon = branchSprite.GetComponent<PolygonCollider2D>();
