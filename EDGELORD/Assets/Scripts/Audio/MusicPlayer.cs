@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 /* 
 HOW TO USE:
@@ -19,18 +20,22 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 	public double StartMusicDelay = 0.0F;
 	public bool StartMusicOnInit = true;
 
-	private MusicTrack track;
+	private MusicTrack[] tracks;
+    private MusicTrack currentTrack;
 	private AudioSource[] audioSources;
 	private float currentVolume = 1.0F;
 	private double nextEventTime;
 	private int flip = 0;
 	private bool isPlaying = false;
 
+    private Dictionary<string, MusicTrack> trackDict;
+
     protected MusicPlayer() {}
 
 	// Use this for initialization
 	void Start () {
 		audioSources = new AudioSource[2];
+        trackDict = new Dictionary<string, MusicTrack>();
 		for (int i = 0; i < audioSources.Length; ++i) {
 			GameObject child = new GameObject("Audio Source");
 			child.transform.parent = gameObject.transform;
@@ -38,7 +43,15 @@ public class MusicPlayer : Singleton<MusicPlayer> {
             audioSources[i].volume = Volume;
 		}
 
-		track = GetComponentInChildren<MusicTrack>();
+		tracks = GetComponentsInChildren<MusicTrack>();
+
+        // build dictionary to be able to refer to tracks by name
+        foreach (MusicTrack track in tracks) {
+            Debug.Log("added " + track.name + " to tracks.");
+            trackDict[track.name] = track;
+        }
+
+        currentTrack = tracks[0]; // default is first child MusicTrack in the editor
 
 		if (StartMusicOnInit) {
 			StartMusic();
@@ -53,7 +66,7 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 		double time = AudioSettings.dspTime;
 
 		if (time + 1.0F > nextEventTime) {
-			MusicClip musicClip = track.GetNextClip();
+			MusicClip musicClip = currentTrack.GetNextClip();
 			audioSources[flip].clip = musicClip.Clip;
 			audioSources[flip].PlayScheduled(nextEventTime);
 			nextEventTime += musicClip.LengthInSeconds;
@@ -66,6 +79,23 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 		nextEventTime = AudioSettings.dspTime + StartMusicDelay;
 		Debug.Log("MusicPlayer started");
 	}
+
+    public void PlayMusic(string trackName) {
+        if (isPlaying) {
+            isPlaying = false;
+            StartCoroutine(stopAndSwitchTrackCoroutine(trackName));
+        } else {
+            currentTrack = trackDict[trackName];
+            StartMusic();
+        }
+    }
+
+    private IEnumerator stopAndSwitchTrackCoroutine(string trackName) {
+        yield return fadeOutAndStopCoroutine(0.001F, 0.55F);
+        ResetVolume();
+        currentTrack = trackDict[trackName];
+        StartMusic();
+    }
 
 	public void StopMusic() {
 		isPlaying = false;

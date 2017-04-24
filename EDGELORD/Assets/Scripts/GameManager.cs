@@ -24,6 +24,7 @@ namespace EDGELORD.Manager {
         private bool gameInProgress;
         private bool playersReady;
         private float timeLeft;
+        private bool gameEnded;
 
         private IEnumerator timerCoroutine;
         private IEnumerator TEST_scoreUpdateCoroutine;
@@ -45,6 +46,7 @@ namespace EDGELORD.Manager {
         public TreeRoot Player2TreeRoot;
 
         void Start () {
+            gameEnded = false;
             gameInProgress = false;
             playersReady = false;
 
@@ -102,6 +104,9 @@ namespace EDGELORD.Manager {
         }
 
         void Update () {
+            if (gameEnded) {
+                return;
+            }
             // wait until both players have readied
             if (!playersReady) {
                 playersReady = players.All(player => player.GetComponent<CharacterActionScript>().isReady);
@@ -120,6 +125,7 @@ namespace EDGELORD.Manager {
                 showRestartButton();
                 gameInProgress = false;
                 playersReady = false;
+                gameEnded = true;
 
                 // if (true) { // TODO: get player input to restart the game here
                 //     ResetGame();
@@ -157,8 +163,7 @@ namespace EDGELORD.Manager {
             StopCoroutine(timerCoroutine);
             timerDisplay.ResetTime();
 
-            Debug.Log("game stopped");
-            musicPlayer.FadeOutAndStop();
+            musicPlayer.PlayMusic("Gameover Music");
 
             disablePlayerInput();
         }
