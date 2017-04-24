@@ -10,19 +10,23 @@ namespace EDGELORD
         public GameObject BranchPrefab;
 	    public TreeRoot TreeRoot;
 	    public TreeBranchData BranchData;
-	    public KeyCode TestInput = KeyCode.Space;
+	    //public KeyCode TestInput = KeyCode.Space;
 
-	    private void Update()
-	    {
-	        if (Input.GetKeyDown(TestInput))
-	        {
-	            GenerateBranch(BranchData);
-	        }
-	    }
+	    //private void Update()
+	    //{
+	    //    if (Input.GetKeyDown(TestInput))
+	    //    {
+	    //        GenerateBranch(BranchData);
+	    //    }
+	    //}
 
 	    public void GenerateBranch(TreeBranchData data)
 	    {
             TreeRoot.CreateBranch(data);
 	    }
-	}
+        public void GenerateBranch(TreeBranchData data, TreeRoot root)
+        {
+            root.CreateBranch(data);
+        }
+    }
 }

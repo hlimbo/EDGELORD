@@ -14,11 +14,11 @@ namespace EDGELORD.TreeBuilder
 
 	    public ControlState controlState = ControlState.Default;
 	    //public TreeBranch ParentBranch;
-        public TreeRoot Root;
         private Vector3 startPos;
 	    private Vector3 aimVector;
 	    private TestBranchMaker branchMaker;
 	    public TreeBranch currentTargetBranch;
+	    public LayerMask raycastMask;
 
 	    private void Awake()
 	    {
@@ -52,7 +52,7 @@ namespace EDGELORD.TreeBuilder
                         controlState = ControlState.Default;
 	                    TreeBranchData newTreeBranchData = GenerateTreeBranchData();
 
-	                    branchMaker.GenerateBranch(newTreeBranchData);
+	                    branchMaker.GenerateBranch(newTreeBranchData, currentTargetBranch.MyRoot);
 	                    startPos = Vector3.zero;
 	                    aimVector = Vector3.zero;
                     }
@@ -66,10 +66,10 @@ namespace EDGELORD.TreeBuilder
 	    {
 	        TreeBranchData b = new TreeBranchData();
 	        b.Length = aimVector.magnitude;
-	        b.Width = 1f; // Apply "Golden ratio" with length?
+	        b.Width = 0.5f; // Apply "Golden ratio" with length?
 	        b.GrowDirection = aimVector.normalized;
 	        b.ParentBranch = currentTargetBranch;
-	        b.LocalBasePoint =b.ParentBranch.transform.InverseTransformPoint(startPos);
+	        b.LocalBasePoint = b.ParentBranch.transform.InverseTransformPoint(startPos);
 	        return b;
 	    }
 
@@ -87,21 +87,25 @@ namespace EDGELORD.TreeBuilder
 
             Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mouseWorldPosition.z = Camera.main.transform.position.z;
-            RaycastHit2D rayCastResult = Physics2D.Raycast(mouseWorldPosition, new Vector3(0, 0, 0), 0.0f);
+            RaycastHit2D rayCastResult = Physics2D.Raycast(mouseWorldPosition, new Vector3(0, 0, 0), 0.0f, raycastMask);
             if (rayCastResult.rigidbody != null)
 	        {
 	            Debug.Log("Hit!" );
                 Debug.Log(rayCastResult.rigidbody);
-	            var b = rayCastResult.rigidbody.GetComponent<TreeBranch>();
+	            var b = rayCastResult.rigidbody.GetComponent<TreeBranch_Sprite>();
 	            if (b)
 	            {
-	                currentTargetBranch = b;
+	                currentTargetBranch = b.OwnerTreeBranch;
+	                startPos = b.OwnerTreeBranch.GetProjectedPosition(startPos, true);
+	                //Root.CurrentHoverBranch = b.OwnerTreeBranch;
 	            }
 	        }
 	        else
-	        {
+            {
+                currentTargetBranch = null;
                 Debug.Log("No Hit.");
-            }
+	            return false;
+	        }
             return true;
 	    }
 
