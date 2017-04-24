@@ -8,11 +8,14 @@ public class CountdownDisplay : MonoBehaviour {
     public GameObject target;
 
     private TMP_Text textBox;
+    private SfxPlayer sfxPlayer;
 
 	void Awake () {
         textBox = target.GetComponentInChildren<TMP_Text>();
         textBox.text = System.Convert.ToString(countdownLengthInSecs);
         target.SetActive(false);
+
+        sfxPlayer = GetComponent<SfxPlayer>();
 	}
 
     public void ShowCountdown () {
@@ -38,9 +41,12 @@ public class CountdownDisplay : MonoBehaviour {
         int countdown = countDownInSeconds; //countdownLengthInSecs;
         do {
             textBox.text = System.Convert.ToString(countdown);
+            sfxPlayer.PlaySoundEffect("siren");
             --countdown;
             yield return new WaitForSeconds(1);
         } while (countdown > 0);
+
+        sfxPlayer.PlaySoundEffect("siren"); // play for 0 as well
 
         if (startGame) {
             textBox.text = "Go!";
