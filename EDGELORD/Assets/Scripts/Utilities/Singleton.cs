@@ -39,7 +39,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
                         {
                             if (other != _instance)
                             {
-                                Destroy(other);
+                                Destroy(((GameObject)other).gameObject);
                             }
                         }
                         return _instance;
@@ -78,6 +78,19 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 	/// So, this was made to be sure we're not creating that buggy ghost object.
 	/// </summary>
 	public void OnDestroy () {
-		applicationIsQuitting = true;
+        if(_instance == this)
+		    applicationIsQuitting = true;
 	}
+
+    public virtual void Awake()
+    {
+        if (_instance != null)
+        {
+            Destroy(this.gameObject);
+        }
+        //else
+        //{
+        //    _instance = this;
+        //}
+    }
 }

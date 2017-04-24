@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 /* 
 HOW TO USE:
@@ -33,10 +34,51 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 
     protected MusicPlayer() {}
 
-    void Awake()
+    public override void Awake()
     {
-        DontDestroyOnLoad(this.gameObject);
-        SetChildrenDontDestroyOnLoad(transform);
+        base.Awake();
+        if (MusicPlayer.Instance == this)
+        {
+            DontDestroyOnLoad(this.gameObject);
+        }
+        if (!isInitialized)
+        {
+            Init();
+        }
+        //DontDestroyOnLoad(this.gameObject);
+        //SetChildrenDontDestroyOnLoad(transform);
+        SceneManager.sceneLoaded += (scene, mode) =>
+        {
+            //Start();
+            
+            switch (scene.buildIndex)
+            {
+                case 0:
+                    //StartMusic();
+                    //PlayMusic("Menu Music");
+                    break;
+                case 1:
+                    ForcePlayTrack("Ingame Music", false);
+                    break;
+                case 2:
+
+                    break;
+                case 3:
+
+                    break;
+                case 4:
+
+                    break;
+                default:
+                    StopMusic();
+                    ResetVolume();
+                    currentTrack.ResetClips();
+                    break;
+            }
+
+            //Debug.Log("NextEventTime = " + nextEventTime);
+            //isPlaying = false;
+        };
     }
 
     void SetChildrenDontDestroyOnLoad(Transform t)
@@ -51,9 +93,18 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 	// Use this for initialization
 	void Start ()
     {
-        if (!isInitialized) {
-            Init();
-        }
+        //if (!isInitialized)
+        //{
+        //    Init();
+        //}
+        //StopMusic();
+        //ResetVolume();
+        //if(StartMusicOnInit)
+        //    StartMusic();
+        //nextEventTime = 0f;
+        //StartMusic();
+        //Debug.Log("NextEventTime = " + nextEventTime);
+        //isPlaying = false;
     }
 
     private void Init()
@@ -100,6 +151,7 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 			audioSources[flip].PlayScheduled(nextEventTime);
 			nextEventTime += musicClip.LengthInSeconds;
 			flip = 1 - flip;
+            Debug.Log("Next Thing");
 		}
 	}
 
@@ -119,6 +171,15 @@ public class MusicPlayer : Singleton<MusicPlayer> {
             currentTrack = trackDict[trackName];
             StartMusic();
         }
+    }
+
+    public void ForcePlayTrack(string trackName, bool autoStart)
+    {
+        StopMusic();
+        ResetVolume();
+        currentTrack = trackDict[trackName];
+        currentTrack.ResetClips();
+        if(autoStart) StartMusic();
     }
 
     private IEnumerator stopAndSwitchTrackCoroutine(string trackName) {

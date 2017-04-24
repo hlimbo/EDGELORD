@@ -153,9 +153,10 @@ namespace EDGELORD.Manager {
         }
 
         void StartGame () {
-            if (!DEBUG_Disable_Music) {
+            if (!DEBUG_Disable_Music || true) {
                 MusicPlayer.Instance.StartMusic();
             }
+            Debug.Log("STARTING GAME");
             StartCoroutine(startGameWithCountdown());
         }
 

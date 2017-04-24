@@ -25,6 +25,12 @@ public class MusicTrack : MonoBehaviour {
 		Debug.Log("queued clip at index " + currentClip);
 		return clips[currentClip];
 	}
+
+    public void ResetClips()
+    {
+        started = false;
+        currentClip = 0;
+    }
 }
 
 
