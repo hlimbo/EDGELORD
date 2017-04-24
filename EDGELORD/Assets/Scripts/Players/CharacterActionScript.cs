@@ -78,7 +78,13 @@ public class CharacterActionScript : MonoBehaviour {
         }
         else {
             if (inputs.getActionDown()) {
-                ready = true;
+                Collider2D collider = Physics2D.OverlapCircle(transform.position, overlapRadius, LayerMask.GetMask("Default"));
+                if (collider != null) {
+                    EDGELORD.TreeBuilder.TreeBranch branch = collider.transform.GetComponentInParent<EDGELORD.TreeBuilder.TreeBranch>();
+                    if (branch.OwningPlayer == OwningPlayer) {
+                        ready = true;
+                    }
+                }
             }
         }
 	}
