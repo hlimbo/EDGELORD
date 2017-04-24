@@ -172,7 +172,7 @@ namespace EDGELORD.Manager {
             StopCoroutine(timerCoroutine);
             timerDisplay.ResetTime();
 
-            MusicPlayer.Instance.PlayMusic("Gameover Music");
+            MusicPlayer.Instance.ForcePlayTrack("Gameover Music", true);//PlayMusic("Gameover Music");
 
             disablePlayerInput();
         }
