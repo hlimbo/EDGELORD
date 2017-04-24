@@ -12,7 +12,7 @@ namespace MichaelWolf
 	    {
 	        if (Input.GetKeyDown(RestartKey))
 	        {
-	            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+	            SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
 	        }
 	    }
 	}

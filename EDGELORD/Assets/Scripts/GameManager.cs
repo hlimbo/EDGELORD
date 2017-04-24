@@ -33,7 +33,7 @@ namespace EDGELORD.Manager {
 
         private Vector3[] startingPlayerPositions;
 
-        public MusicPlayer musicPlayer;
+        //public MusicPlayer musicPlayer;
         //private SfxPlayer sfxPlayer;
         public Canvas ui;
         public GameObject[] players;
@@ -53,7 +53,7 @@ namespace EDGELORD.Manager {
             playersReady = false;
             endCountdownStarted = false;
 
-            musicPlayer = (MusicPlayer)FindObjectOfType<MusicPlayer>();
+            //musicPlayer = MusicPlayer.Instance;
             //sfxPlayer = (SfxPlayer)FindObjectOfType(typeof(SfxPlayer));
             ui = (Canvas)FindObjectOfType<Canvas>();
             timerDisplay = ui.GetComponentInChildren<TimerDisplay>();
@@ -154,7 +154,7 @@ namespace EDGELORD.Manager {
 
         void StartGame () {
             if (!DEBUG_Disable_Music) {
-                musicPlayer.StartMusic();
+                MusicPlayer.Instance.StartMusic();
             }
             StartCoroutine(startGameWithCountdown());
         }
@@ -171,7 +171,7 @@ namespace EDGELORD.Manager {
             StopCoroutine(timerCoroutine);
             timerDisplay.ResetTime();
 
-            musicPlayer.PlayMusic("Gameover Music");
+            MusicPlayer.Instance.PlayMusic("Gameover Music");
 
             disablePlayerInput();
         }

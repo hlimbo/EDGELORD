@@ -79,8 +79,8 @@ public class QuitButton : MonoBehaviour {
     }
 
     private IEnumerator StopMusicThenQuit () {
-        MusicPlayer musicPlayer = (MusicPlayer)FindObjectOfType(typeof(MusicPlayer));
-        musicPlayer.FadeOutAndStop(0.9f);
+        // MusicPlayer musicPlayer = MusicPlayer.Instance;
+        MusicPlayer.Instance.FadeOutAndStop(0.9f);
         yield return new WaitForSeconds(1.0f);
         Application.Quit();
     }

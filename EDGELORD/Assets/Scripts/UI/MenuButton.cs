@@ -20,10 +20,10 @@ public class MenuButton : MonoBehaviour {
 
     private IEnumerator LoadNextScene () {
         if (stopMusic) {
-            MusicPlayer musicPlayer = (MusicPlayer)FindObjectOfType(typeof(MusicPlayer));
-            musicPlayer.FadeOutAndStop(0.9f);
+            // MusicPlayer musicPlayer = MusicPlayer.Instance;
+            MusicPlayer.Instance.FadeOutAndStop(0.9f);
             yield return new WaitForSeconds(1.0f);
         }
-        SceneManager.LoadScene(sceneName);
+        SceneManager.LoadSceneAsync(sceneName);
     }
 }

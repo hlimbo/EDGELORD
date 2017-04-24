@@ -9,7 +9,7 @@ public class BackToMenu : MonoBehaviour {
     public void GoBackToMenu()
     {
         //Load MainMenu
-        SceneManager.LoadScene(0);
+        SceneManager.LoadSceneAsync(0);
     }
 
 }
