@@ -32,6 +32,21 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 
     protected MusicPlayer() {}
 
+    void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
+        SetChildrenDontDestroyOnLoad(transform);
+    }
+
+    void SetChildrenDontDestroyOnLoad(Transform t)
+    {
+        foreach (Transform child in t)
+        {
+            DontDestroyOnLoad(child.gameObject);
+            if (child.childCount > 0)
+                SetChildrenDontDestroyOnLoad(child);
+        }
+    }
 	// Use this for initialization
 	void Start () {
 		audioSources = new AudioSource[2];
