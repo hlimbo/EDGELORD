@@ -137,6 +137,7 @@ namespace EDGELORD.Manager {
 
             if (timeLeft <= 4 && !endCountdownStarted) {
                 countdownDisplay.DoFullCountdown();
+                endCountdownStarted = true;
             }
         }
 
