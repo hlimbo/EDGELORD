@@ -41,7 +41,8 @@ public class CountdownDisplay : MonoBehaviour {
         int countdown = countDownInSeconds; //countdownLengthInSecs;
         do {
             textBox.text = System.Convert.ToString(countdown);
-            sfxPlayer.PlaySoundEffect("siren");
+            if(!startGame)
+                sfxPlayer.PlaySoundEffect("siren");
             --countdown;
             yield return new WaitForSeconds(1);
         } while (countdown > 0);
