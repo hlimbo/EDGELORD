@@ -15,6 +15,8 @@ namespace EDGELORD.Manager {
         private ScoreDisplay player2ScoreDisplay;
         private TimerDisplay timerDisplay;
         private WinnerDisplay winnerDisplay;
+        private GameObject restartButton;
+        private GameObject menuButton;
 
         private GameObject[] winnerMessages;
 
@@ -54,6 +56,10 @@ namespace EDGELORD.Manager {
             Component[] playerScoreDisplays = ui.GetComponentsInChildren<ScoreDisplay>();
             player1ScoreDisplay = (ScoreDisplay)playerScoreDisplays[0];
             player2ScoreDisplay = (ScoreDisplay)playerScoreDisplays[1];
+            restartButton = GameObject.Find("RestartButton");
+            restartButton.SetActive(false);
+            menuButton = GameObject.Find("MainMenuButton");
+            menuButton.SetActive(false);
 
             timerCoroutine = startTimer();
 
@@ -109,6 +115,7 @@ namespace EDGELORD.Manager {
             if (timeLeft <= 0 && gameInProgress) {
                 StopGame();
                 showWinner();
+                showRestartButton();
                 gameInProgress = false;
                 playersReady = false;
 
@@ -173,6 +180,11 @@ namespace EDGELORD.Manager {
             }
 
             winnerDisplay.ShowMessage(winner);
+        }
+
+        private void showRestartButton() {
+            restartButton.SetActive(true);
+            menuButton.SetActive(true);
         }
 
         public void UpdateScores () {
