@@ -19,7 +19,7 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 
 	public float Volume = 1.0F;
 	public double StartMusicDelay = 0.0F;
-	public bool StartMusicOnInit = true;
+	public bool StartMusicOnInit = false;
 
 	public GameObject[] tracks;
     private MusicTrack currentTrack;
@@ -131,10 +131,10 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 
         currentTrack = trackDict[tracks[0].name]; // default is first child MusicTrack in the editor
 
-        if (StartMusicOnInit)
-        {
-            StartMusic();
-        }
+        // if (StartMusicOnInit)
+        // {
+        //     StartMusic();
+        // }
 
         isInitialized = true;
     }
@@ -159,8 +159,8 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 	public void StartMusic() {
         if (isPlaying) return;
 
+		nextEventTime = 1 + AudioSettings.dspTime + StartMusicDelay;
 		isPlaying = true;
-		nextEventTime = AudioSettings.dspTime + StartMusicDelay;
 		Debug.Log("MusicPlayer started");
 	}
 
