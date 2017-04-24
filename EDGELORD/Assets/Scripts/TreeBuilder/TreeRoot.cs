@@ -30,7 +30,7 @@ namespace EDGELORD.TreeBuilder
             OnBranchCutAction += vector3 => { OnUpdateTreeCollider(); UpdateTotalArea(); Debug.Log("Area!"); };
             UpdateTotalArea();
         }
-        public void CreateBranch(TreeBranchData data)
+        public TreeBranch CreateBranch(TreeBranchData data)
         {
             //ToDo: CreateBranch From Data
             var go = GameObject.Instantiate(BranchPrefab, data.LocalBasePoint, Quaternion.identity);
@@ -41,7 +41,7 @@ namespace EDGELORD.TreeBuilder
 
             data.ParentBranch.AddChildBranch(branch);
             BranchList.Add(branch);
-
+            return branch;
         }
 
         public void OnCompleteBranchCallback()

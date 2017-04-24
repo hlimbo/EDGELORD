@@ -26,4 +26,8 @@ public class CharacterMovementScript : MonoBehaviour {
             rigid.velocity = new Vector2();
         }
 	}
+
+    public void moveToPoint(Vector2 point) {
+        transform.position = point;
+    }
 }

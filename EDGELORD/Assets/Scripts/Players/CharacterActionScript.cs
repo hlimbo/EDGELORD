@@ -73,6 +73,7 @@ public class CharacterActionScript : MonoBehaviour {
                     }
                     else
                     {
+                        print(collider.gameObject.name);
                         Debug.LogWarning("No Branch Found!!!");
                     }
                 }
@@ -98,7 +99,9 @@ public class CharacterActionScript : MonoBehaviour {
         {
             direction *= Mathf.Deg2Rad;
             direction += Mathf.PI / 2;
-            root.CreateBranch(new EDGELORD.TreeBuilder.TreeBranchData(length, Mathf.Clamp(2.0f / length, minWidth, maxWidth), branch.transform.TransformDirection(new Vector2(-Mathf.Cos(direction), Mathf.Sin(direction))), branch, branch.transform.InverseTransformPoint(transform.position)));
+            var resultBranch = root.CreateBranch(new EDGELORD.TreeBuilder.TreeBranchData(length, Mathf.Clamp(2.0f / length, minWidth, maxWidth), branch.transform.TransformDirection(new Vector2(-Mathf.Cos(direction), Mathf.Sin(direction))), branch, branch.transform.InverseTransformPoint(transform.position)));
+            //Vector3 endpoint = resultBranch.transform.position + resultBranch.transform.up * (resultBranch.BranchLength-0.1f);
+            //movement.moveToPoint(endpoint);
             sfxPlayer.PlaySoundEffect("sword_thrust");
         }
         else {
