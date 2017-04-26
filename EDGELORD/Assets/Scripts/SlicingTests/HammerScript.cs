@@ -40,7 +40,20 @@ public class HammerScript : MonoBehaviour
         {
             if (playerToFind != null)
             {
-                inputs = (PlayerInputManager)GameObject.Find(playerToFind).GetComponent<PlayerInputManager>();
+                foreach (var c in FindObjectsOfType<CharacterActionScript>())
+                {
+                    if(c.OwningPlayer == playerID)
+                    {
+                        inputs = c.GetComponent<PlayerInputManager>();
+                        break;
+                    }
+                }
+                if(!inputs)
+                {
+                    var find = GameObject.Find(playerToFind);
+                    if(find) inputs = find.GetComponent<PlayerInputManager>();
+
+                }
             }
         }
 
@@ -53,7 +66,8 @@ public class HammerScript : MonoBehaviour
     {
         if (!inMenu)
         {
-            if (inputs.getActionDown())
+            if(inputs)
+            if (inputs.GetActionDown)
             {
                 //animator.SetBool("canSwingHammer", true);
                 animator.SetTrigger("SwingHammer");

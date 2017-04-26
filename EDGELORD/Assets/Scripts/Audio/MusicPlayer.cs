@@ -121,22 +121,30 @@ public class MusicPlayer : Singleton<MusicPlayer> {
         }
 
         // instantiate prefab as an object, then add to trackDict to refer to it by name
-        foreach (GameObject trackPrefab in tracks)
+        if (tracks != null)
         {
-            var trackObject = Instantiate(trackPrefab, gameObject.transform);
-            trackObject.transform.parent = gameObject.transform;
-            Debug.Log("added " + trackPrefab.name + " to tracks.");
-            trackDict[trackPrefab.name] = trackObject.GetComponent<MusicTrack>();
+            foreach (GameObject trackPrefab in tracks)
+            {
+                var trackObject = Instantiate(trackPrefab, gameObject.transform);
+                trackObject.transform.parent = gameObject.transform;
+                Debug.Log("added " + trackPrefab.name + " to tracks.");
+                trackDict[trackPrefab.name] = trackObject.GetComponent<MusicTrack>();
+            }
+        
+
+            currentTrack = trackDict[tracks[0].name]; // default is first child MusicTrack in the editor
+
+            if (StartMusicOnInit)
+            {
+                StartMusic();
+            }
+
+            isInitialized = true;
         }
-
-        currentTrack = trackDict[tracks[0].name]; // default is first child MusicTrack in the editor
-
-        if (StartMusicOnInit)
+        else
         {
-            StartMusic();
+            Debug.LogError("Tracks are NULL!!!");
         }
-
-        isInitialized = true;
     }
 
     // Update is called once per frame
@@ -157,6 +165,7 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 	}
 
 	public void StartMusic() {
+        if (!isInitialized) return;
         if (isPlaying) return;
 
 		isPlaying = true;
@@ -165,6 +174,7 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 	}
 
     public void PlayMusic(string trackName) {
+        if (!isInitialized) return;
         if (isPlaying) {
             isPlaying = false;
             StartCoroutine(stopAndSwitchTrackCoroutine(trackName));
@@ -176,6 +186,7 @@ public class MusicPlayer : Singleton<MusicPlayer> {
 
     public void ForcePlayTrack(string trackName, bool autoStart)
     {
+        if (!isInitialized) return;
         StopMusic();
         ResetVolume();
         currentTrack = trackDict[trackName];
@@ -191,7 +202,8 @@ public class MusicPlayer : Singleton<MusicPlayer> {
     }
 
 	public void StopMusic() {
-        if(!isPlaying) return;
+        if (!isInitialized) return;
+        if (!isPlaying) return;
         isPlaying = false;
 		FadeOutAndStop(0.06f); // fadeout super quick so that the audio doesn't pop when stopped
 		Debug.Log("MusicPlayer stopped");

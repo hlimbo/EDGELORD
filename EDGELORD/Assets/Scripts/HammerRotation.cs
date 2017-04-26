@@ -43,7 +43,7 @@ public class HammerRotation : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (!smithing && inputs.getActionDown()) {
+        if (!smithing && inputs.GetActionDown) {
             Debug.Log("got ActionDown");
             smithing = true;
             SwingHammer();

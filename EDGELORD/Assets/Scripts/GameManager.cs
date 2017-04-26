@@ -47,7 +47,28 @@ namespace EDGELORD.Manager {
         public TreeRoot Player1TreeRoot;
         public TreeRoot Player2TreeRoot;
 
-        void Start () {
+        void Start ()
+        {
+
+            if (players.Length < 2)
+            {
+                var c = FindObjectsOfType<CharacterActionScript>();
+                if (c.Length >= 2)
+                {
+                    players = new GameObject[2];
+                    if (c[0].OwningPlayer == PlayerID.Player_1)
+                    {
+                        players[0] = c[0].gameObject;
+                        players[1] = c[1].gameObject;
+                    }
+                    else
+                    {
+                        players[0] = c[1].gameObject;
+                        players[1] = c[0].gameObject;
+                    }
+                }
+            }
+
             gameEnded = false;
             gameInProgress = false;
             playersReady = false;
@@ -70,9 +91,11 @@ namespace EDGELORD.Manager {
 
             timerCoroutine = startTimer();
 
-            startingPlayerPositions = new Vector3[] { players[0].transform.position, players[1].transform.position };
+            //startingPlayerPositions = new Vector3[] { players[0].transform.position, players[1].transform.position };
 
             InitObjects();
+
+ 
 
             var roots = FindObjectsOfType<TreeRoot>();
             if(roots.Length >= 2)
@@ -112,7 +135,28 @@ namespace EDGELORD.Manager {
             }
             // wait until both players have readied
             if (!playersReady) {
+                if(players.Length >= 2) 
                 playersReady = players.All(player => player.GetComponent<CharacterActionScript>().isReady);
+                else
+                {
+                    playersReady = false;
+                    //ToDo: Replace this. This is lazy. 
+                    var c = FindObjectsOfType<CharacterActionScript>();
+                    if (c.Length >= 2)
+                    {
+                        players = new GameObject[2];
+                        if (c[0].OwningPlayer == PlayerID.Player_1)
+                        {
+                            players[0] = c[0].gameObject;
+                            players[1] = c[1].gameObject;
+                        }
+                        else
+                        {
+                            players[0] = c[1].gameObject;
+                            players[1] = c[0].gameObject;
+                        }
+                    }
+                }
             }
 
             // start the game

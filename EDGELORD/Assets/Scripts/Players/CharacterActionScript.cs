@@ -54,7 +54,7 @@ public class CharacterActionScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if (!smithing) {
-            if (inputs.getActionDown()) {
+            if (inputs.GetActionDown) {
                 Collider2D collider = Physics2D.OverlapCircle(transform.position, overlapRadius, LayerMask.GetMask("Default"));
                 Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, overlapRadius, LayerMask.GetMask("Default"));
                 foreach (Collider2D c in colliders)
@@ -104,11 +104,11 @@ public class CharacterActionScript : MonoBehaviour {
         ghostBlade.gameObject.SetActive(true);
         float direction = 0;
         float length = minLength;
-        while ((!inputs.getActionDown() && branch.IsAttached && branch.IsPointOnBranch(transform.position))//branch.GetProjectedPosition(transform.position).magnitude<=branch.BranchLength) 
+        while ((!inputs.GetActionDown && branch.IsAttached && branch.IsPointOnBranch(transform.position))//branch.GetProjectedPosition(transform.position).magnitude<=branch.BranchLength) 
             || !manager.gameRunning) {
-            direction += inputs.getMovementDirection().x*rotationSpeed*Time.deltaTime;
+            direction += inputs.MovementDirection.x*rotationSpeed*Time.deltaTime;
             float radDirection = (direction * Mathf.Deg2Rad) + (Mathf.PI / 2);
-            length = Mathf.Clamp(length+inputs.getMovementDirection().y*lengthChangeSpeed*Time.deltaTime, minLength, maxLength);
+            length = Mathf.Clamp(length+inputs.MovementDirection.y*lengthChangeSpeed*Time.deltaTime, minLength, maxLength);
             bladeScript.setRotation(branch.transform.TransformDirection(new Vector2(-Mathf.Cos(radDirection), Mathf.Sin(radDirection))));
             bladeScript.setScale(new Vector2(Mathf.Clamp(2.0f / length, minWidth, maxWidth), length));
             yield return null;
