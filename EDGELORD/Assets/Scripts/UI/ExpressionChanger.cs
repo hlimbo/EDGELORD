@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ExpressionChanger : MonoBehaviour {
 
@@ -8,10 +9,15 @@ public class ExpressionChanger : MonoBehaviour {
     private int faceCooldown = 500;
     public Sprite[] facials;
 
+    //used if placed in gameworld
+    private SpriteRenderer sr;
+    //used if placed in ui
+    private Image img;
 
 	// Use this for initialization
 	void Start () {
-		
+        sr = GetComponent<SpriteRenderer>();
+        img = GetComponent<Image>();
 	}
 	
 	// Update is called once per frame
@@ -19,7 +25,11 @@ public class ExpressionChanger : MonoBehaviour {
         faceCooldown--;
         if (faceCooldown <= 0)
         {
-            this.GetComponent<SpriteRenderer>().sprite = facials[changeFace()];
+            if (sr)
+                sr.sprite = facials[changeFace()];
+            else
+                img.sprite = facials[changeFace()];
+
             faceCooldown = 500;
         }
 	}
