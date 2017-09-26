@@ -640,7 +640,7 @@ public static class SpriteSlicer2D
 #if UNITY_5
                             Vector2 colliderCenter = boxCollider.offset;
 #else
-                            Vector2 colliderCenter = boxCollider.center;
+                            Vector2 colliderCenter = boxCollider.offset;
 #endif
 
                             polygonPoints.Add(colliderCenter + new Vector2(-boxCollider.size.x * 0.5f, -boxCollider.size.y * 0.5f));
@@ -662,7 +662,7 @@ public static class SpriteSlicer2D
 #if UNITY_5
                                 Vector2 colliderCenter = circleCollider.offset;
 #else
-                                Vector2 colliderCenter = circleCollider.center;
+                                Vector2 colliderCenter = circleCollider.offset;
 #endif
 
 								for(int loop = 0; loop < numSteps; loop++)
