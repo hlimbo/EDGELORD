@@ -33,7 +33,7 @@ public class BoundaryScript : MonoBehaviour {
             CalculateBoundaryPositions();
             res = Screen.currentResolution;
             aspectRatio = Camera.main.aspect;
-            Debug.Log("re calculated boundary positions");
+           // Debug.Log("re calculated boundary positions");
         }
     }
 
